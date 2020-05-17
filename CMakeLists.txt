@@ -1,0 +1,47 @@
+# Requirements:
+# Git package
+# GTest package
+
+cmake_minimum_required( VERSION 3.13.4 FATAL_ERROR )
+
+option(version "Project version")
+
+include(${CMAKE_CURRENT_LIST_DIR}/cmake_scripts/Version.cmake)
+
+if(NOT version)
+  git_tag_desc(version)
+else()
+  message(WARNING "Project version defined manually."
+  "To return to automatic version detection reset CMake cache.\n"
+  "If using out-of-source build remove build directory with 'rm -r ./build/'\n"
+  "If using git version control system remove all untracked files with 'git clean -d -f -x -n'")
+endif()
+
+parse_version(version ${version})
+if(NOT version_FOUND)
+  message(SEND_ERROR "No project version could be obtained reading git signed tags.")
+  message(FATAL_ERROR "Set project version manually by: cmake -D version=v1.2.3-description")
+endif()
+
+message("Project version is: ${version_major}.${version_minor}.${version_patch}")
+message("Version description: ${version_desc}")
+project( ASP VERSION ${version_major}.${version_minor}.${version_patch} LANGUAGES CXX ) # HOMEPAGE, DESCRIPTION 
+
+
+#Get dependencies
+find_package(Boost 1.67 REQUIRED COMPONENTS)
+
+message("Boost include dir: ${Boost_INCLUDE_DIR}")
+message("Boost library dir: ${Boost_LIBRARY_DIR}")
+
+include_directories(${CMAKE_SOURCE_DIR}) #TODO: remove after include paths carried in dependencies
+message("----------Enter Subdirectories----------")
+
+add_subdirectory(src)
+
+##############
+# Unit Tests #
+##############
+#enable_testing()
+#find_package(GTest REQUIRED)
+#add_subdirectory(utests)
