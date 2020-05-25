@@ -18,8 +18,6 @@ message("Target: fri [done]")
 # PathPool #
 ############
 list(APPEND pp_headers "path_pool.h")
-#list(APPEND pp_headers "path.h")
-
 
 list(APPEND pp_deps Boost::boost)
 list(APPEND pp_deps fri)
