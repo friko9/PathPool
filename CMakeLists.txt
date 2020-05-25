@@ -42,6 +42,6 @@ add_subdirectory(src)
 ##############
 # Unit Tests #
 ##############
-#enable_testing()
-#find_package(GTest REQUIRED)
-#add_subdirectory(utests)
+enable_testing()
+find_package(GTest REQUIRED)
+add_subdirectory(utests)
