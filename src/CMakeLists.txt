@@ -32,26 +32,3 @@ target_include_directories(path_pool INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(path_pool INTERFACE ${pp_deps})
 
 message("Target: path_tool [done] \t <- ${pp_deps}")
-
-
-#########
-# dummy #
-#########
-list(APPEND dummy_files "main.cpp")
-list(APPEND dummy_deps path_pool)
-#list(APPEND dummy_compile_opt "-pthread")
-list(APPEND dummy_deps "-pthread")
-# list(APPEND dummy_compile_opt "-D_REENTRANT")
-list(APPEND dummy_compile_opt "-Wall")
-
-message("Target: dummy")
-add_executable( dummy  )
-target_sources( dummy PRIVATE ${dummy_files} )
-target_compile_options(dummy PRIVATE ${dummy_compile_opt} )
-target_compile_features(dummy PRIVATE ${features} )
-target_include_directories(dummy PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_compile_features( dummy PRIVATE cxx_std_14 )
-
-target_link_libraries(dummy PRIVATE ${dummy_deps})
-
-message("Target: dummy [done] \t <- ${deps}")
