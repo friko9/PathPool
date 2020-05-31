@@ -13,108 +13,130 @@ struct ListPathPool;
 
 struct HashPathPool
 {
-  using key_t = size_t;
+  using pathid_t = size_t;
   using tag_t = boost::flyweight<std::string>;
-private:
-  struct node_t : public std::unordered_map<tag_t,key_t>
-  {
-    node_t(tag_t name, key_t parent,const std::unordered_map<tag_t,key_t>& children):
-      std::unordered_map<tag_t,key_t>{children},
-      m_parent{parent},
-      m_name{name}
-    {}
-    key_t m_parent;
-    tag_t m_name;
-  };
 public:
-  key_t get_subnode(key_t path,tag_t subnode)
+  static constexpr pathid_t null {0};
+public:
+  HashPathPool(tag_t root = {}):
+    m_nodes {{node_t{root,null,{}}}}
+  {}
+  pathid_t get_subnode(pathid_t path,tag_t subnode)
   {
-    auto result = nodes[path].emplace(subnode,nodes.size());
+    auto result = m_nodes[path].emplace(subnode,m_nodes.size());
     if(result.second)
-      nodes.push_back(node_t{subnode,path,{}});
+      m_nodes.push_back(node_t{subnode,path,{}});
     return result.first->second;
   }
-  std::vector<key_t> get_siblings(key_t path) const
+  std::vector<pathid_t> get_subnodes(pathid_t path) const
   {
-    std::vector<key_t> result;
-    auto value_t_ref = &std::decay<decltype(*nodes[path].begin())>::type::second;
-    path = get_parent(path);
-    std::copy(field_ref(nodes[path].begin(),value_t_ref),
-	      field_ref(nodes[path].end(),value_t_ref),
+    std::vector<pathid_t> result;
+    auto value_t_ref = &std::decay<decltype(*m_nodes[path].begin())>::type::second;
+    std::copy(field_ref(m_nodes[path].begin(),value_t_ref),
+	      field_ref(m_nodes[path].end(),value_t_ref),
 	      std::back_inserter(result));
     return result;
   }
-  key_t get_parent(key_t path) const
+  pathid_t get_parent(pathid_t path) const
   {
-    return nodes[path].m_parent;
+    return m_nodes[path].m_parent;
   }
-  tag_t get_tagname(key_t path) const
+  tag_t get_tag(pathid_t path) const
   {
-    return nodes[path].m_name;
+    return m_nodes[path].m_name;
   }
-  std::vector<tag_t> get_pathname(key_t path) const
+  pathid_t get_root() const noexcept
   {
-    std::vector<tag_t> result;  
-    for(; path != 0; path = nodes[path].m_parent)
-      result.push_back(get_tagname(path));
-    return result;
+    return rootid;
   }
 private:
-  std::vector<node_t> nodes {{node_t{tag_t{""},key_t{0},{}}}};
+  struct node_t : public std::unordered_map<tag_t,pathid_t>
+  {
+    node_t(tag_t name, pathid_t parent,const std::unordered_map<tag_t,pathid_t>& children):
+      std::unordered_map<tag_t,pathid_t>{children},
+      m_parent{parent},
+      m_name{name}
+    {}
+    pathid_t m_parent;
+    tag_t m_name;
+  };
+private:
+  static constexpr pathid_t rootid {0};
+  std::vector<node_t> m_nodes;
 };
 
 
 struct ListPathPool
 {
-  using key_t = size_t;
+  using pathid_t = size_t;
   using tag_t = boost::flyweight<std::string>;
+  static constexpr pathid_t null {0};
+public:
+  ListPathPool(tag_t root = {}):
+    m_nodes {{node_t{root,null,null,null}}}
+  {}
+  pathid_t get_subnode(pathid_t path,tag_t subnode)
+  {
+    pathid_t node = path;
+    for(node = m_nodes[node].m_child; node != null; node = m_nodes[node].m_sibling)
+      if(get_tag(node) == subnode)
+	return node;
+    return insert_subnode(path,subnode);
+  }
+  std::vector<pathid_t> get_subnodes(pathid_t path) const
+  {
+    std::vector<pathid_t> result;
+    for(path = m_nodes[path].m_child; path != null; path = m_nodes[path].m_sibling)
+      result.push_back(path);
+    return result;
+  }
+  pathid_t get_parent(pathid_t path) const
+  {
+    return m_nodes[path].m_parent;
+  }
+  tag_t get_tag(pathid_t path) const
+  {
+    return m_nodes[path].m_name;
+  }
+  pathid_t get_root() const noexcept
+  {
+    return rootid;
+  }
 private:
+  pathid_t insert_subnode(pathid_t path, tag_t subnode)
+  {
+    pathid_t i = m_nodes.size();
+    m_nodes.push_back(node_t{subnode,path,m_nodes[path].m_child,null});
+    return m_nodes[path].m_child = i;
+  }
+private:
+    private:
   struct node_t
   {
-    node_t(tag_t name, key_t parent,key_t sibling, key_t child):
+    node_t(tag_t name, pathid_t parent,pathid_t sibling, pathid_t child):
       m_child{child},
       m_sibling{sibling},
       m_parent{parent},
       m_name{name}
     {}
-    key_t m_child;
-    key_t m_sibling;
-    key_t m_parent;
+    pathid_t m_child;
+    pathid_t m_sibling;
+    pathid_t m_parent;
     tag_t m_name;
   };
-public:
-  key_t get_subnode(key_t path,tag_t subnode)
-  {
-    key_t node = path;
-    for(node = nodes[node].m_child; node != 0; path = nodes[node].m_sibling)
-      if(get_tagname(node) == subnode)
-	return node;
-    return insert_subnode(path,subnode);
-  }
-  std::vector<key_t> get_siblings(key_t path) const
-  {
-    std::vector<key_t> result;
-    for(path = nodes[get_parent(path)].m_child; path != 0; path = nodes[path].m_sibling)
-      result.push_back(path);
-    return result;
-  }
-  key_t insert_subnode(key_t path, tag_t subnode)
-  {
-    key_t node = nodes.size();
-    nodes.push_back(node_t{subnode,path,nodes[path].m_child,0});
-    nodes[path].m_child = node;
-    return node;
-  }
-  key_t get_parent(key_t path) const
-  {
-    return nodes[path].m_parent;
-  }
-  tag_t get_tagname(key_t path) const
-  {
-    return nodes[path].m_name;
-  }
-  std::vector<tag_t> get_pathname(key_t path) const;
 private:
-  std::vector<node_t> nodes {{node_t{tag_t{""},0,0,0}}};
+  static constexpr pathid_t rootid {0};
+  std::vector<node_t> m_nodes;
 };
+
+template<typename PathPoolT>
+std::vector<typename PathPoolT::tag_t>
+to_taglist(const PathPoolT& pool,typename PathPoolT::pathid_t path)
+{
+  std::vector<typename PathPoolT::tag_t> result;  
+  for(; path != PathPoolT::root; path = pool.get_parent(path))
+    result.push_back(pool.get_tag(path));
+  result.push_back(pool.get_tag(path));
+  return result;
+}
 #endif /* PATH_POOL_H */
