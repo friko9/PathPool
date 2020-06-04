@@ -7,7 +7,7 @@
 #include <gtest/gtest.h>
 
 template <typename T, template<typename...> class ContainerT>
-struct Pretty : public std::vector<T>
+struct Pretty : public ContainerT<T>
 {
   using value_type = T;
   Pretty():
