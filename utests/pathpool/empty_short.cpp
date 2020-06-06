@@ -3,15 +3,13 @@
 #include "utest.h"
 
 #include <gtest/gtest.h>
-#include <limits>
-#include <string>
 
 using namespace std::string_literals;
 
 using namespace std;
 using namespace testing;
 
-class EmptyShort : public TestWithParam<const TestObjBase*>
+class EmptyShort : public TestWithParam<const TestObjBase<int>*>
 {
 public:
   void SetUp() override
@@ -23,12 +21,12 @@ public:
     delete m_test_obj;
   }
 public:
-  TestObjBase* m_test_obj;
+  TestObjBase<int>* m_test_obj;
 };
 
 namespace {
-  using tag_t = const boost::flyweight<std::string>;
-  tag_t root_tag {"root"};
+  using tag_t = int;
+  tag_t root_tag = 0;
   
   
   //TEST SUITE
@@ -66,7 +64,7 @@ namespace {
   //RESULT <PathPool> consistent after insertion
   TEST_P(EmptyShort, ProperRootInsert)
   {
-    tag_t tag {"test"};
+    tag_t tag {1};
     auto root = m_test_obj->get_root();
     auto subnode = m_test_obj->get_subnode(root, tag);
 
@@ -83,8 +81,8 @@ namespace {
   //RESULT <PathPool> consistent
   TEST_P(EmptyShort, ProperRootInsertTwice)
   {
-    tag_t tag {"test"};
-    tag_t tag2 {"test2"};
+    tag_t tag {1};
+    tag_t tag2 {2};
     auto root = m_test_obj->get_root();
     auto subnode = m_test_obj->get_subnode(root, tag);
     auto subnode_2 = m_test_obj->get_subnode(root, tag2);
@@ -107,8 +105,8 @@ namespace {
   //RESULT <PathPool> consistent
   TEST_P(EmptyShort, ProperStackedInsertion)
   {
-    tag_t tag {"test"};
-    tag_t tag2 {"test2"};
+    tag_t tag {1};
+    tag_t tag2 {2};
     auto root = m_test_obj->get_root();
     auto subnode = m_test_obj->get_subnode(root, tag);
     auto subnode_2 = m_test_obj->get_subnode(subnode, tag2);
@@ -132,7 +130,7 @@ namespace {
   //RESULT <PathPool> consistent
   TEST_P(EmptyShort, ProperRootInsertSameTwice)
   {
-    tag_t tag {"test"};
+    tag_t tag {1};
     auto root = m_test_obj->get_root();
     auto subnode = m_test_obj->get_subnode(root, tag);
     auto subnode_2 = m_test_obj->get_subnode(root, tag);
@@ -146,8 +144,8 @@ namespace {
     ASSERT_EQ( std::count(root_subnodes.begin(),root_subnodes.end(),subnode),1u);
   }
   
-  auto test_objects = Values( NEW_TEST_OBJ(HashPathPool,root_tag),
-			      NEW_TEST_OBJ(ListPathPool,root_tag));
+  auto test_objects = Values( NEW_TEST_OBJ(HashPathPool<int>,root_tag),
+			      NEW_TEST_OBJ(ListPathPool<int>,root_tag));
 
   //TEST DATASET
   INSTANTIATE_TEST_CASE_P(PathPools, EmptyShort, test_objects );

@@ -4,21 +4,21 @@
 #include <gtest/gtest.h>
 #include <boost/flyweight.hpp>
 
-template<int i> //just to make it header-only
-struct TestObjBase_
+template<typename T> //just to make it header-only
+struct TestObjBase
 {
   using pathid_t = size_t;
-  using tag_t = boost::flyweight<std::string>;
+  using tag_t = T;
 public:
-  virtual ~TestObjBase_() = default;
-  virtual TestObjBase_* clone() const = 0;
+  virtual ~TestObjBase() = default;
+  virtual TestObjBase* clone() const = 0;
   virtual pathid_t get_subnode(pathid_t path,tag_t subnode) =0;
   virtual std::vector<pathid_t> get_subnodes(pathid_t path) const =0;
   virtual pathid_t get_parent(pathid_t path) const =0;
   virtual tag_t get_tag(pathid_t path) const =0;
   virtual pathid_t get_root() const noexcept =0;
 public:
-  TestObjBase_(std::string name):
+  TestObjBase(std::string name):
   m_name { name }
   {}
   std::string toString() const
@@ -29,16 +29,17 @@ private:
   std::string m_name;
 };
 
-using TestObjBase = TestObjBase_<0>;
-
 template<typename ObjT>
-struct TestObjImpl : public TestObjBase
+struct TestObjImpl : public TestObjBase<typename ObjT::tag_t>
 {
-  using TestObjBase::TestObjBase;
+  using TestObjBaseT = TestObjBase<typename ObjT::tag_t>;
+  using pathid_t = typename TestObjBaseT::pathid_t;
+  using tag_t = typename TestObjBaseT::tag_t;
+  using TestObjBaseT::TestObjBaseT;
 public:
   template<typename... T>
   TestObjImpl(std::string name, T... args):
-    TestObjBase {name},
+    TestObjBaseT {name},
     m_test_obj {args...}
   {}
   ~TestObjImpl() override = default;
@@ -68,31 +69,31 @@ public:
   }
 private:
   TestObjImpl(const TestObjImpl<ObjT>& arg):
-    TestObjBase(arg),
+    TestObjBaseT(arg),
     m_test_obj(arg.m_test_obj)
   {}
 private:
   ObjT m_test_obj;
 };
 
-template <>
-class testing::internal::UniversalTersePrinter<const TestObjBase*> {
+template <typename T>
+class testing::internal::UniversalTersePrinter<const TestObjBase<T>*> {
 public:
-  static void Print(const TestObjBase* obj, ::std::ostream* os) {
+  static void Print(const TestObjBase<T>* obj, ::std::ostream* os) {
     *os << obj->toString();
   }
 };
 
-template <>
-class testing::internal::UniversalTersePrinter<const TestObjBase> {
+template <typename T>
+class testing::internal::UniversalTersePrinter<const TestObjBase<T>> {
 public:
-  static void Print(const TestObjBase& obj, ::std::ostream* os) {
+  static void Print(const TestObjBase<T>& obj, ::std::ostream* os) {
     *os << obj.toString();
   }
 };
 
 template<typename TestT, typename... ArgsT>
-TestObjBase* make_test_object(std::string name, ArgsT... args)
+TestObjBase<typename TestT::tag_t>* make_test_object(std::string name, ArgsT... args)
 {
   return new TestObjImpl<TestT>(name,args...);
 }

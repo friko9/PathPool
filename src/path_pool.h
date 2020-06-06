@@ -3,22 +3,32 @@
 
 #include "./field_ref_iterator.h"
 
-#include <boost/flyweight.hpp>
 #include <unordered_map>
 #include <string>
 #include <vector>
 
-struct HashPathPool;
-struct ListPathPool;
+template<typename TagT>
+class HashPathPool;
 
-struct HashPathPool
+template<typename TagT>
+class ListPathPool;
+
+template<typename TagT> 
+class HashPathPool
 {
-  using pathid_t = size_t;
-  using tag_t = boost::flyweight<std::string>;
+  static_assert(std::is_copy_constructible<TagT>(),"Template argument is not copy-constructible");
+  // TagT is EmplaceConstructible - EmplaceConstructible is well formed
+  // TagT must be Erasable, CopyInsertable, allow for: unordered_map::hasher(TagT), TagT == TagT
+  struct node_t;
 public:
-  static constexpr pathid_t null {0};
+  using tag_t = TagT;
+  using pathid_t = typename std::vector<node_t>::size_type;
 public:
-  HashPathPool(tag_t root = {}):
+  template <typename = typename std::enable_if<std::is_default_constructible<tag_t>::value>::type>
+    HashPathPool():
+      HashPathPool(tag_t{})
+  {}
+  HashPathPool(tag_t root):
     m_nodes {{node_t{root,null,{}}}}
   {}
   pathid_t get_subnode(pathid_t path,tag_t subnode)
@@ -61,18 +71,27 @@ private:
     tag_t m_name;
   };
 private:
+  static constexpr pathid_t null {0};
   static constexpr pathid_t rootid {0};
   std::vector<node_t> m_nodes;
 };
 
-
-struct ListPathPool
+template<typename TagT>
+class ListPathPool
 {
-  using pathid_t = size_t;
-  using tag_t = boost::flyweight<std::string>;
-  static constexpr pathid_t null {0};
+  static_assert(std::is_copy_constructible<TagT>(),"Template argument is not copy-constructible");
+  // TagT is EmplaceConstructible - EmplaceConstructible is well formed
+  // TagT must be Erasable, CopyInsertable, allow for: unordered_map::hasher(TagT), TagT == TagT
+  struct node_t;
 public:
-  ListPathPool(tag_t root = {}):
+  using tag_t = TagT;
+  using pathid_t = typename std::vector<node_t>::size_type;
+public:
+  template <typename = typename std::enable_if<std::is_default_constructible<tag_t>::value>::type>
+  ListPathPool():
+    ListPathPool(tag_t{})
+  {}
+  ListPathPool(tag_t root):
     m_nodes {{node_t{root,null,null,null}}}
   {}
   pathid_t get_subnode(pathid_t path,tag_t subnode)
@@ -110,7 +129,6 @@ private:
     return m_nodes[path].m_child = i;
   }
 private:
-    private:
   struct node_t
   {
     node_t(tag_t name, pathid_t parent,pathid_t sibling, pathid_t child):
@@ -125,6 +143,7 @@ private:
     tag_t m_name;
   };
 private:
+  static constexpr pathid_t null {0};
   static constexpr pathid_t rootid {0};
   std::vector<node_t> m_nodes;
 };

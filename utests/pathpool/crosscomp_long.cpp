@@ -3,15 +3,15 @@
 #include "utest.h"
 
 #include <gtest/gtest.h>
-#include <limits>
-#include <string>
+#include <functional>
+#include <random>
 
 using namespace std::string_literals;
 
 using namespace std;
 using namespace testing;
 
-class CrosscompLong : public TestWithParam<std::tuple<const TestObjBase*,const TestObjBase*>>
+class CrosscompLong : public TestWithParam<std::tuple<const TestObjBase<int>*,const TestObjBase<int>*>>
 {
   void SetUp() override
   {
@@ -19,17 +19,14 @@ class CrosscompLong : public TestWithParam<std::tuple<const TestObjBase*,const T
     m_test_obj2.reset(get<1>(this->GetParam())->clone()); 
   }
 public:
-  std::unique_ptr<TestObjBase> m_test_obj1;
-  std::unique_ptr<TestObjBase> m_test_obj2;
+  std::unique_ptr<TestObjBase<int>> m_test_obj1;
+  std::unique_ptr<TestObjBase<int>> m_test_obj2;
 };
 
-#include <functional>
-#include <random>
-
 namespace {
-  using tag_t = const boost::flyweight<std::string>;
+  using tag_t = int;
   using pathid_t = size_t;
-  tag_t root_tag {"root"};
+  tag_t root_tag {0};
   
   //TEST SUITE
   //SUBJECT empty <PathPool>
@@ -42,8 +39,8 @@ namespace {
     for( size_t i =1; i< 1000000; ++i)
       {
 	int index = rand() % i;
-	auto first = m_test_obj1->get_subnode(index, boost::flyweight<std::string>(std::to_string(i)));
-	auto second  = m_test_obj2->get_subnode(index, boost::flyweight<std::string>(std::to_string(i)));
+	auto first = m_test_obj1->get_subnode(index, i);
+	auto second  = m_test_obj2->get_subnode(index, i);
 	paths.push_back({first,second});
       }
 
@@ -62,8 +59,8 @@ namespace {
       }
   };
 
-  auto test_objects = Values( NEW_TEST_OBJ(HashPathPool,root_tag),
-			      NEW_TEST_OBJ(ListPathPool,root_tag));
+  auto test_objects = Values( NEW_TEST_OBJ(HashPathPool<int>,root_tag),
+			      NEW_TEST_OBJ(ListPathPool<int>,root_tag));
 
   INSTANTIATE_TEST_CASE_P(PathPools, CrosscompLong,
 			  Combine( test_objects, test_objects));
