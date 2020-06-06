@@ -11,7 +11,7 @@ using namespace std::string_literals;
 using namespace std;
 using namespace testing;
 
-class LongTest : public TestWithParam<std::tuple<const TestObjBase*,Pretty<int,vector>>>
+class VergecaseLong : public TestWithParam<std::tuple<const TestObjBase*,Pretty<int,vector>>>
 {
 public:
   void SetUp() override
@@ -22,7 +22,7 @@ public:
   std::unique_ptr<TestObjBase> m_test_obj;
 };
 
-namespace EmptyHashsetTest {
+namespace {
   using tag_t = const boost::flyweight<std::string>;
   using pathid_t = size_t;
   tag_t root_tag {"root"};
@@ -32,7 +32,7 @@ namespace EmptyHashsetTest {
   //SUBJECT empty <PathPool>
   //ACTION Insert 1 subnode for all consecutive nodes
   //RESULT <PathPool> consistent
-  TEST_P(LongTest, LongestDepth)
+  TEST_P(VergecaseLong, LongestDepth)
   {
     vector<pathid_t> paths;
     auto path = m_test_obj->get_root();
@@ -56,7 +56,7 @@ namespace EmptyHashsetTest {
   //SUBJECT empty <PathPool>
   //ACTION Insert all as root subnodes depth = 1
   //RESULT <PathPool> consistent
-  TEST_P(LongTest, ShortestDepth)
+  TEST_P(VergecaseLong, ShortestDepth)
   {
     vector<pathid_t> paths;
     auto root = m_test_obj->get_root();
@@ -79,8 +79,8 @@ namespace EmptyHashsetTest {
 			      NEW_TEST_OBJ(ListPathPool,root_tag));
 
   //TEST DATASET
-  INSTANTIATE_TEST_CASE_P(PathPools, LongTest,
+  INSTANTIATE_TEST_CASE_P(PathPools, VergecaseLong,
 			  Combine( test_objects,
-				   Values ( make_Pretty( make_InclusiveRange(0, 10000) ))
+				   Values ( make_pretty( make_InclusiveRange(0, 10000) ))
 				   ));
 }

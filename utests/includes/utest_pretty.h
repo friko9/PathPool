@@ -69,17 +69,17 @@ struct ReversePretty : public Pretty<T,ContainerT>
 
 
 template <typename T, template<typename...> class ContainerT, typename... Args>
-Pretty<T,ContainerT> make_Pretty(ContainerT<T,Args...> arg) {
+Pretty<T,ContainerT> make_pretty(ContainerT<T,Args...> arg) {
   return Pretty<T,ContainerT>{arg};
 }
 
 template <typename T, template<typename...> class ContainerT>
-ShuffledPretty<T,ContainerT> make_ShuffledPretty(ContainerT<T> arg) {
+ShuffledPretty<T,ContainerT> make_shuffled_pretty(ContainerT<T> arg) {
   return ShuffledPretty<T,ContainerT>{arg};
 }
 
 template <typename T, template<typename...> class ContainerT>
-ReversePretty<T,ContainerT> make_ReversePretty(ContainerT<T> arg) {
+ReversePretty<T,ContainerT> make_reverse_pretty(ContainerT<T> arg) {
   return ReversePretty<T,ContainerT>{arg};
 }
 

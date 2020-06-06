@@ -11,7 +11,7 @@ using namespace std::string_literals;
 using namespace std;
 using namespace testing;
 
-class EmptyTest : public TestWithParam<const TestObjBase*>
+class EmptyShort : public TestWithParam<const TestObjBase*>
 {
 public:
   void SetUp() override
@@ -26,7 +26,7 @@ public:
   TestObjBase* m_test_obj;
 };
 
-namespace EmptyHashsetTest {
+namespace {
   using tag_t = const boost::flyweight<std::string>;
   tag_t root_tag {"root"};
   
@@ -34,7 +34,7 @@ namespace EmptyHashsetTest {
   //TEST SUITE
   //SUBJECT empty <PathPool>
   //RESULT <PathPool> root parent = root
-  TEST_P(EmptyTest, RootParentIsRoot)
+  TEST_P(EmptyShort, RootParentIsRoot)
   {
     auto root = m_test_obj->get_root();
     auto root_parent = m_test_obj->get_parent(root);
@@ -44,7 +44,7 @@ namespace EmptyHashsetTest {
   //TEST SUITE
   //SUBJECT empty <PathPool>
   //RESULT root path is as defined
-  TEST_P(EmptyTest, RootNameIsAsSpecified)
+  TEST_P(EmptyShort, RootNameIsAsSpecified)
   {
     auto root = m_test_obj->get_root();
     ASSERT_EQ(m_test_obj->get_tag(root),root_tag);
@@ -53,7 +53,7 @@ namespace EmptyHashsetTest {
   //TEST SUITE
   //SUBJECT empty <PathPool>
   //RESULT root path has no subnodes
-  TEST_P(EmptyTest, RootHasNoSiblings)
+  TEST_P(EmptyShort, RootHasNoSiblings)
   {
     auto root = m_test_obj->get_root();
     auto subnodes = m_test_obj->get_subnodes(root);
@@ -64,7 +64,7 @@ namespace EmptyHashsetTest {
   //SUBJECT empty <PathPool>
   //ACTION single insertion to root
   //RESULT <PathPool> consistent after insertion
-  TEST_P(EmptyTest, ProperRootInsert)
+  TEST_P(EmptyShort, ProperRootInsert)
   {
     tag_t tag {"test"};
     auto root = m_test_obj->get_root();
@@ -81,7 +81,7 @@ namespace EmptyHashsetTest {
   //SUBJECT empty <PathPool>
   //ACTION 2x insertions to root
   //RESULT <PathPool> consistent
-  TEST_P(EmptyTest, ProperRootInsertTwice)
+  TEST_P(EmptyShort, ProperRootInsertTwice)
   {
     tag_t tag {"test"};
     tag_t tag2 {"test2"};
@@ -105,7 +105,7 @@ namespace EmptyHashsetTest {
   //SUBJECT empty <PathPool>
   //ACTION insertion to root, insertion to root-subnode
   //RESULT <PathPool> consistent
-  TEST_P(EmptyTest, ProperStackedInsertion)
+  TEST_P(EmptyShort, ProperStackedInsertion)
   {
     tag_t tag {"test"};
     tag_t tag2 {"test2"};
@@ -130,7 +130,7 @@ namespace EmptyHashsetTest {
   //SUBJECT empty <PathPool>
   //ACTION 2x same element insertions to root
   //RESULT <PathPool> consistent
-  TEST_P(EmptyTest, ProperRootInsertSameTwice)
+  TEST_P(EmptyShort, ProperRootInsertSameTwice)
   {
     tag_t tag {"test"};
     auto root = m_test_obj->get_root();
@@ -150,5 +150,5 @@ namespace EmptyHashsetTest {
 			      NEW_TEST_OBJ(ListPathPool,root_tag));
 
   //TEST DATASET
-  INSTANTIATE_TEST_CASE_P(PathPools, EmptyTest, test_objects );
+  INSTANTIATE_TEST_CASE_P(PathPools, EmptyShort, test_objects );
 }
