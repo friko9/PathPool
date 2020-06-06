@@ -24,11 +24,11 @@ function(add_google_test)
   target_compile_definitions( ${name} PRIVATE -DUTEST_FNAME=${fname} )
   target_include_directories( ${name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
   target_link_libraries( ${name} PRIVATE ${depends} GTest::GTest GTest::Main)
-
   gtest_discover_tests( ${name}
     TEST_PREFIX "${name}_"
     PROPERTIES LABELS "${label}"
     DISCOVERY_TIMEOUT ${timeout} )
+  message("Target: ${name} [done] \t <- ${depends}")
 endfunction()
 
 add_subdirectory(includes)
