@@ -7,22 +7,23 @@
 #include <string>
 #include <vector>
 
-template<typename TagT>
+template<typename TagT, typename HashF,typename EqualsF,template<typename T> class AllocatorT> 
 class HashPathPool;
 
-template<typename TagT>
+template<typename TagT, template<typename T> class AllocatorT> 
 class ListPathPool;
 
-template<typename TagT> 
+template<typename TagT, typename HashF = std::hash<TagT>,typename EqualsF = std::equal_to<TagT>,template<typename T> class AllocatorT = std::allocator> 
 class HashPathPool
 {
   static_assert(std::is_copy_constructible<TagT>(),"Template argument is not copy-constructible");
   // TagT is EmplaceConstructible - EmplaceConstructible is well formed
   // TagT must be Erasable, CopyInsertable, allow for: unordered_map::hasher(TagT), TagT == TagT
   struct node_t;
+  using ContainerT = typename std::vector<node_t,AllocatorT<node_t>>;
 public:
   using tag_t = TagT;
-  using pathid_t = typename std::vector<node_t>::size_type;
+  using pathid_t = typename ContainerT::size_type;
 public:
   template <typename = typename std::enable_if<std::is_default_constructible<tag_t>::value>::type>
     HashPathPool():
@@ -38,9 +39,10 @@ public:
       m_nodes.push_back(node_t{subnode,path,{}});
     return result.first->second;
   }
-  std::vector<pathid_t> get_subnodes(pathid_t path) const
+  template<typename ResultT = std::vector<pathid_t>>
+  ResultT get_subnodes(pathid_t path) const
   {
-    std::vector<pathid_t> result;
+    ResultT result;
     auto value_t_ref = &std::decay<decltype(*m_nodes[path].begin())>::type::second;
     std::copy(field_ref(m_nodes[path].begin(),value_t_ref),
 	      field_ref(m_nodes[path].end(),value_t_ref),
@@ -60,10 +62,11 @@ public:
     return rootid;
   }
 private:
-  struct node_t : public std::unordered_map<tag_t,pathid_t>
+  struct node_t : public std::unordered_map<tag_t, pathid_t, HashF, EqualsF, AllocatorT<std::pair<tag_t,pathid_t>>>
   {
-    node_t(tag_t name, pathid_t parent,const std::unordered_map<tag_t,pathid_t>& children):
-      std::unordered_map<tag_t,pathid_t>{children},
+    using MapT = std::unordered_map<tag_t, pathid_t, HashF, EqualsF, AllocatorT<std::pair<tag_t,pathid_t>>>;
+    node_t(tag_t name, pathid_t parent,const MapT& children):
+      MapT{children},
       m_parent{parent},
       m_name{name}
     {}
@@ -73,19 +76,20 @@ private:
 private:
   static constexpr pathid_t null {0};
   static constexpr pathid_t rootid {0};
-  std::vector<node_t> m_nodes;
+  ContainerT m_nodes;
 };
 
-template<typename TagT>
+template<typename TagT, template<typename T> class AllocatorT = std::allocator> 
 class ListPathPool
 {
   static_assert(std::is_copy_constructible<TagT>(),"Template argument is not copy-constructible");
   // TagT is EmplaceConstructible - EmplaceConstructible is well formed
   // TagT must be Erasable, CopyInsertable, allow for: unordered_map::hasher(TagT), TagT == TagT
   struct node_t;
+  using ContainerT = typename std::vector<node_t,AllocatorT<node_t>>;
 public:
   using tag_t = TagT;
-  using pathid_t = typename std::vector<node_t>::size_type;
+  using pathid_t = typename ContainerT::size_type;
 public:
   template <typename = typename std::enable_if<std::is_default_constructible<tag_t>::value>::type>
   ListPathPool():
@@ -102,9 +106,10 @@ public:
 	return node;
     return insert_subnode(path,subnode);
   }
-  std::vector<pathid_t> get_subnodes(pathid_t path) const
+  template<typename ResultT = std::vector<pathid_t>>
+  ResultT get_subnodes(pathid_t path) const
   {
-    std::vector<pathid_t> result;
+    ResultT result;
     for(path = m_nodes[path].m_child; path != null; path = m_nodes[path].m_sibling)
       result.push_back(path);
     return result;
@@ -145,7 +150,7 @@ private:
 private:
   static constexpr pathid_t null {0};
   static constexpr pathid_t rootid {0};
-  std::vector<node_t> m_nodes;
+  ContainerT m_nodes;
 };
 
 template<typename PathPoolT>
