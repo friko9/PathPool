@@ -1,8 +1,8 @@
-#PathPool
+# PathPool
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f9ebc1a9abf74544a509967d81ee2e28)](https://www.codacy.com/manual/friko9/PathPool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=friko9/PathPool&amp;utm_campaign=Badge_Grade)
 
-##Rationale
+## Rationale
 
 PathPool archetype aims to minimize computional costs when storing and operating on multiple path entries in the system.
 
