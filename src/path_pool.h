@@ -29,6 +29,7 @@ public:
     HashPathPool():
       HashPathPool(tag_t{})
   {}
+  explicit
   HashPathPool(tag_t root):
     m_nodes {{node_t{root,null,{}}}}
   {}
@@ -95,6 +96,7 @@ public:
   ListPathPool():
     ListPathPool(tag_t{})
   {}
+  explicit
   ListPathPool(tag_t root):
     m_nodes {{node_t{root,null,null,null}}}
   {}
