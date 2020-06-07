@@ -7,13 +7,13 @@
 #include <string>
 #include <vector>
 
-template<typename TagT, typename HashF,typename EqualsF,template<typename T> class AllocatorT> 
+template<typename TagT, template<typename T> class AllocatorT, typename HashF,typename EqualsF> 
 class HashPathPool;
 
 template<typename TagT, template<typename T> class AllocatorT> 
 class ListPathPool;
 
-template<typename TagT, typename HashF = std::hash<TagT>,typename EqualsF = std::equal_to<TagT>,template<typename T> class AllocatorT = std::allocator> 
+template<typename TagT, template<typename T> class AllocatorT = std::allocator, typename HashF = std::hash<TagT>,typename EqualsF = std::equal_to<TagT>> 
 class HashPathPool
 {
   static_assert(std::is_copy_constructible<TagT>(),"Template argument is not copy-constructible");
