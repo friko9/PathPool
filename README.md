@@ -8,13 +8,13 @@ PathPool archetype aims to minimize computional costs when storing and operating
 
 Each path in namespace must have following qualities:
 
-1. have parent path
-2. provide unique description of destination in namespace
+ 1. have parent path
+ 2. provide unique description of destination in namespace
 
 Thou each path can be described as a pair of:
 
-* reference to parent path
-* tag - element expanding parent path
+  * reference to parent path
+  * tag - element expanding parent path
 
 ## Implementation
 Natural consequence of path requirements is implementing path as forward-lists.
@@ -31,44 +31,45 @@ User interaction is performed with 2 types: tag\_t and pathid\_t
 
 tag\_t (template parameter). pair of <parent pathid, tag> explicitly describes path.
 Must allow for:
-
-* copying
-* equality comparison
-* (in HashPathPool) hashing
-
+ 
+  * copying
+  * equality comparison
+  * (in HashPathPool) hashing
+ 
 pathid\_t - explicily describes a path.
 Allows for:
 
-* path identification in the pool.
-* comparison
-* hashing
-* value operations like assignment, copying
+  * path identification in the pool.
+  * comparison
+  * hashing
+  * value operations like assignment, copying
 
 Supported template parameters:
 
-* `TagT` - type to be used to differentiate subnodes
+  * `TagT` - type to be used to differentiate subnodes
 
 Defined types:
 
-* `tag_t = TagT`
-* `pathid_t`
+  * `tag_t = TagT`
+  * `pathid_t`
 
 Supported methods:
 
-* `constructor() - only if tag_t has default constructor`
-* `constructor(tag_t root)`
-* `get_subnode(pathid_t path,tag_t subnode) -> pathid_t`
-* `get_subnodes(pathid_t path) const -> std::vector<pathid_t>`
-* `get_subnodes<ContainerT>(pathid_t path) const -> ResultT`
-* `get_parent(pathid_t path) const -> pathid_t`
-* `get_tag(pathid_t path) const -> tag_t`
-* `get_root() const noexcept -> pathid_t`
+  * `constructor() - only if tag_t has default constructor`
+  * `constructor(tag_t root)`
+  * `get_subnode(pathid_t path,tag_t subnode) -> pathid_t`
+  * `get_subnodes(pathid_t path) const -> std::vector<pathid_t>`
+  * `get_subnodes<ContainerT>(pathid_t path) const -> ResultT`
+  * `get_parent(pathid_t path) const -> pathid_t`
+  * `get_tag(pathid_t path) const -> tag_t`
+  * `get_root() const noexcept -> pathid_t`
 
 ## Classes
 
-1. ``HashPathPool<TagT, AllocatorT = std::allocator,HashF = std::hash<TagT>,EqualsF = std::equal_to<TagT>>``
+ 1. ``HashPathPool<TagT, AllocatorT = std::allocator,HashF = std::hash<TagT>,EqualsF = std::equal_to<TagT>>``
 
 	Uses hashmap to store subnodes. Fast in structures with large number of subnodes with the same parent
-2. ``ListPathPool<TagT, AllocatorT = std::allocator>``
+
+ 2. ``ListPathPool<TagT, AllocatorT = std::allocator>``
 
    Uses linked-list in array approach. Faster in most cases.
