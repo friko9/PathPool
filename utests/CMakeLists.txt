@@ -29,7 +29,10 @@ function(add_google_test)
     PROPERTIES LABELS "${label}"
     DISCOVERY_TIMEOUT ${timeout} )
   message("Target: ${name} [done] \t <- ${depends}")
+  list(APPEND utests ${name})
 endfunction()
 
 add_subdirectory(includes)
 add_subdirectory(pathpool)
+
+setup_target_for_coverage_gcovr_html(NAME coverage EXECUTABLE ctest -j ${PROCESSOR_COUNT} EXCLUDE utests/* ${utests})
