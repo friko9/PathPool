@@ -30,15 +30,4 @@ T<tail...> make(tail... args)
   return T<tail...>{args...};
 }
 
-// remove if boost::flyweight hashes without help
-// template<>
-// struct std::hash<boost::flyweight<std::string>>
-// {
-//   size_t operator()(boost::flyweight<std::string> arg) const noexcept
-//   {
-//     using hashed_t = std::decay<decltype(arg.get_key())>::type;
-//     return std::hash<hashed_t>{}(arg.get_key());
-//   }
-// };
-
 #endif /* FIELD_REF_ITERATOR_H */

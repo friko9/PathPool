@@ -2,7 +2,6 @@
 #define TESTOBJ_H
 
 #include <gtest/gtest.h>
-#include <boost/flyweight.hpp>
 
 template<typename T> //just to make it header-only
 struct TestObjBase

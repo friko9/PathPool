@@ -19,7 +19,6 @@ message("Target: field_ref_iterator [done]")
 ############
 list(APPEND pp_headers "path_pool.h")
 
-list(APPEND pp_deps Boost::boost)
 list(APPEND pp_deps field_ref_iterator)
 
 message("Target: path_pool")

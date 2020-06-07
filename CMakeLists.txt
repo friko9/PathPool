@@ -28,12 +28,6 @@ message("Version description: ${version_desc}")
 project( ASP VERSION ${version_major}.${version_minor}.${version_patch} LANGUAGES CXX ) # HOMEPAGE, DESCRIPTION 
 
 
-#Get dependencies
-find_package(Boost 1.67 REQUIRED COMPONENTS)
-
-message("Boost include dir: ${Boost_INCLUDE_DIR}")
-message("Boost library dir: ${Boost_LIBRARY_DIR}")
-
 include_directories(${CMAKE_SOURCE_DIR}) #TODO: remove after include paths carried in dependencies
 message("----------Enter Subdirectories----------")
 
