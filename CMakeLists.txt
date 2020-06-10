@@ -4,8 +4,7 @@
 
 cmake_minimum_required( VERSION 3.13.4 FATAL_ERROR )
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/cmake")
-
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/bilke/cmake-modules")
 option(version "Project version")
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake_scripts/Version.cmake)
