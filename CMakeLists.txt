@@ -4,6 +4,8 @@
 
 cmake_minimum_required( VERSION 3.13.4 FATAL_ERROR )
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/cmake")
+
 option(version "Project version")
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake_scripts/Version.cmake)
@@ -27,6 +29,7 @@ message("Project version is: ${version_major}.${version_minor}.${version_patch}"
 message("Version description: ${version_desc}")
 project( ASP VERSION ${version_major}.${version_minor}.${version_patch} LANGUAGES CXX ) # HOMEPAGE, DESCRIPTION 
 
+include(${CMAKE_CURRENT_LIST_DIR}/cmake_scripts/Coverage.cmake)
 
 include_directories(${CMAKE_SOURCE_DIR}) #TODO: remove after include paths carried in dependencies
 message("----------Enter Subdirectories----------")
