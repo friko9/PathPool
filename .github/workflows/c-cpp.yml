@@ -1,26 +1,26 @@
-name: C/C++ CI
+name: build+unittest
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
     branches: [ master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    container:
+      image: docker://thezxcv/gcc-cmake-gtest:latest
     steps:
     - uses: actions/checkout@v2
     - name: version-checking
       run: gcc -v && g++ -v && cmake --version
-    - name: cmake-configure
-      run: cmake -H. -B.build -DCMAKE_BUILD_TYPE=Debug -D version=v0.0.0-github-build
-    - name: cmake-build
-      run: cmake --build .build
-    - name: cmake-test
-      run: cd .build && ctest
+    - name: configure
+      run: cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Coverage -Dversion=v0.0.0-github-build
+    - name: build
+      run: cmake --build build
+    - name: utest+coverage
+      run: cmake --build build --target coverage
     - name: Coveralls GitHub Action
       uses: coverallsapp/github-action@v1.1.1
       with:
+        path-to-lcov: build/coverage.info
         github-token: ${{ secrets.GITHUB_TOKEN }}
