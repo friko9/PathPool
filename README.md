@@ -1,6 +1,6 @@
 # PathPool
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/f9ebc1a9abf74544a509967d81ee2e28)](https://www.codacy.com/manual/friko9/PathPool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=friko9/PathPool&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/f9ebc1a9abf74544a509967d81ee2e28)](https://www.codacy.com/manual/friko9/PathPool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=friko9/PathPool&amp;utm_campaign=Badge_Grade) ![build+unittest](https://github.com/friko9/PathPool/workflows/build+unittest/badge.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/friko9/PathPool/badge.svg?branch=master)](https://coveralls.io/github/friko9/PathPool?branch=master)
 
 ## Rationale
 
@@ -67,9 +67,9 @@ Supported methods:
 ## Classes
 
  1. ``HashPathPool<TagT, AllocatorT = std::allocator,HashF = std::hash<TagT>,EqualsF = std::equal_to<TagT>>``
-
-	Uses hashmap to store subnodes. Fast in structures with large number of subnodes with the same parent
+ 
+	 Uses hashmap to store subnodes. Fast in structures with large number of subnodes with the same parent
 
  2. ``ListPathPool<TagT, AllocatorT = std::allocator>``
-
-   Uses linked-list in array approach. Faster in most cases.
+ 
+	 Uses linked-list in array approach. Faster in most cases.
