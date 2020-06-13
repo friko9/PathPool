@@ -6,6 +6,7 @@ cmake_minimum_required( VERSION 3.13.4 FATAL_ERROR )
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/bilke/cmake-modules")
 option(version "Project version")
+option(perftest "build perftest")
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake_scripts/Version.cmake)
 
@@ -26,11 +27,10 @@ endif()
 
 message("Project version is: ${version_major}.${version_minor}.${version_patch}")
 message("Version description: ${version_desc}")
-project( ASP VERSION ${version_major}.${version_minor}.${version_patch} LANGUAGES CXX ) # HOMEPAGE, DESCRIPTION 
+project( PathPool VERSION ${version_major}.${version_minor}.${version_patch} LANGUAGES CXX ) # HOMEPAGE, DESCRIPTION 
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake_scripts/Coverage.cmake)
 
-include_directories(${CMAKE_SOURCE_DIR}) #TODO: remove after include paths carried in dependencies
 message("----------Enter Subdirectories----------")
 
 add_subdirectory(src)
@@ -38,6 +38,14 @@ add_subdirectory(src)
 ##############
 # Unit Tests #
 ##############
+message("----------Build unit tests----------")
 enable_testing()
 find_package(GTest REQUIRED)
 add_subdirectory(utests)
+
+if(perftest)
+  message("----------Build performace tests----------")
+  set(BENCHMARK_ENABLE_TESTING false)
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/google/benchmark)
+  add_subdirectory(perftest)
+endif()
