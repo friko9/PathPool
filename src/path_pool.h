@@ -246,4 +246,19 @@ get_taglist(const PathPoolT& pool,typename PathPoolT::pathid_t path)
   return result;
 }
 
+template<typename PoolT>
+std::array<typename PoolT::pathid_t,3>
+get_common_path(typename PoolT::pathid_t l, typename PoolT::pathid_t r, PoolT& p)
+{
+  auto pl = p.get_parent(l);
+  auto pr = p.get_parent(r);
+  while( (pl != pr) & (pl != r) )
+    {
+      if ( pl == r ) { pl = pr; break; }
+      pl = (pl > pr )? l=pl, pl = get_parent(pl) : pl;
+      pl = (pl < pr )? r=pr, pr = get_parent(pr) : pr;
+    }
+  return {pl,l,r};
+}
+
 #endif /* PATH_POOL_H */
