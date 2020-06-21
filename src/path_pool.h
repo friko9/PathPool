@@ -75,7 +75,7 @@ public:
   {
     using it_t = typename node_t::MapT::const_iterator;
   public:
-    using iterator_category = std::bidirectional_iterator_tag;
+    using iterator_category = std::forward_iterator_tag;
     using value_type = pathid_t;
     using difference_type = decltype (std::declval<value_type>() - std::declval<value_type>());
     using pointer = value_type*;
@@ -89,8 +89,6 @@ public:
     value_type operator *(){return m_it->second;}
     iterator_t& operator ++(){ ++m_it; return *this; };
     iterator_t operator ++(int){ iterator_t result = *this; ++*this; return result; }
-    iterator_t& operator --(){ return --m_it; };
-    iterator_t operator --(int){ iterator_t result = *this; --*this; return result; }
     bool operator ==(iterator_t const& r) const
     {
       return m_it == r.m_it;
