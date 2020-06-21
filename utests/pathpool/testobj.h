@@ -54,7 +54,7 @@ public:
   IteratorImpl<T>& operator ++(int) override
   {
     const IteratorImpl<T>& result = IteratorImpl<T>{*this};
-    ++*this;
+    m_it++;
     return const_cast<IteratorImpl<T>&>(result);
   }
   bool operator ==(const baseT& arg)const override
@@ -91,20 +91,20 @@ public:
   {
     return **m_it;
   }
-  bool operator ==(const Iterator& arg)
+  bool operator ==(const Iterator<T>& arg) const
   {
     return *m_it == *arg.m_it;
   }
-  bool operator !=(const Iterator& arg)
+  bool operator !=(const Iterator<T>& arg) const
   {
     return *m_it != *arg.m_it;
   }
   Iterator<T>& operator ++(){ ++*m_it; return *this;}
-  Iterator<T>& operator ++(int)
+  Iterator<T> operator ++(int)
   {
     auto result = m_it->clone();
-    ++*this;
-    return Iterator{result};
+    (*m_it)++;
+    return Iterator<T>{result};
   }
 private:
   std::unique_ptr<IteratorBase<T>> m_it;

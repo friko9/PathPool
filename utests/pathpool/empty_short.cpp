@@ -28,7 +28,6 @@ namespace {
   using tag_t = int;
   tag_t root_tag = 0;
   
-  
   //TEST SUITE
   //SUBJECT empty <PathPool>
   //RESULT <PathPool> root parent = root
