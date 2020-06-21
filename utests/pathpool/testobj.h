@@ -218,5 +218,6 @@ make_test_object(std::string name, ArgsT... args)
 }
 
 #define NEW_TEST_OBJ(X, ...) (make_test_object<X>(STR(X), __VA_ARGS__ ))
+#define NEW_TEST_OBJ_DEFAULT(X) (make_test_object<X>(STR(X)))
 
 #endif /* TESTOBJ_H */

@@ -151,7 +151,9 @@ namespace {
     ASSERT_EQ( std::count(root_subnodes.first,root_subnodes.second,subnode),1u);
   }
   
-  auto test_objects = Values( NEW_TEST_OBJ(HashPathPool<int>,root_tag),
+  auto test_objects = Values( NEW_TEST_OBJ_DEFAULT(HashPathPool<int>),
+			      NEW_TEST_OBJ_DEFAULT(ListPathPool<int>),
+			      NEW_TEST_OBJ(HashPathPool<int>,root_tag),
 			      NEW_TEST_OBJ(ListPathPool<int>,root_tag));
 
   //TEST DATASET
