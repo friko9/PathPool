@@ -11,7 +11,7 @@ function(add_google_test)
   endif()
   set(files ${add_google_test_FILES})
   set(depends ${add_google_test_DEPENDS})
-  set(name utest_${label}_${fname})
+  set(name utest_${label}_${fname}-${PROJECT_VERSION})
 
   list(APPEND features cxx_std_14 )
   list(APPEND compile_opt "-Wall")

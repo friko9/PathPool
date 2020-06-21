@@ -3,7 +3,7 @@ function(add_perf_test)
   set(fname ${add_perf_test_FNAME})
   set(files ${add_perf_test_FILES})
   set(depends ${add_perf_test_DEPENDS})
-  set(name perftest_${fname})
+  set(name perftest_${fname}-${PROJECT_VERSION})
 
   list(APPEND features cxx_std_14 )
   list(APPEND compile_opt "-O3")
