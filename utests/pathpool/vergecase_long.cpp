@@ -44,8 +44,9 @@ namespace {
 	auto subnode = m_test_obj->get_subnode(path, x);
 	ASSERT_EQ( subnode, paths[i++]);
 	ASSERT_EQ( m_test_obj->get_parent(subnode), path);
-	ASSERT_EQ( m_test_obj->get_subnodes(path).size(), 1);
-	ASSERT_EQ( m_test_obj->get_subnodes(path)[0], subnode);
+	auto subs = m_test_obj->get_subnodes(path);
+	ASSERT_EQ( std::distance(subs.first,subs.second), 1);
+	ASSERT_EQ( *subs.first, subnode);
 	path = subnode;
       }
   }
@@ -61,15 +62,16 @@ namespace {
     for( auto& x : get<1>(GetParam()))
       paths.push_back(m_test_obj->get_subnode(root, x));
 
-    auto root_subnodes = m_test_obj->get_subnodes(m_test_obj->get_root());
-    ASSERT_EQ( root_subnodes.size() , get<1>(GetParam()).size() );
+    auto root_subnodes = m_test_obj->get_subnodes2(m_test_obj->get_root());
+    ASSERT_EQ( root_subnodes.size(), get<1>(GetParam()).size() );
     for(auto x : paths)
       ASSERT_EQ( count(root_subnodes.begin(),root_subnodes.end(),x), 1u );
     
     for( auto& x : get<1>(GetParam()))
       {
 	auto subnode = m_test_obj->get_subnode(root, x);
-	ASSERT_EQ( m_test_obj->get_subnodes(subnode).size(), 0 );
+	auto subs = m_test_obj->get_subnodes(subnode);
+	ASSERT_EQ( std::distance(subs.first,subs.second), 0 );
       }
   }
   

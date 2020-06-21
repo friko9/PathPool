@@ -55,7 +55,7 @@ namespace {
   {
     auto root = m_test_obj->get_root();
     auto subnodes = m_test_obj->get_subnodes(root);
-    ASSERT_TRUE(subnodes.empty());
+    ASSERT_EQ(std::distance(subnodes.first,subnodes.second), 0);
   }
 
   //TEST SUITE
@@ -70,9 +70,11 @@ namespace {
 
     ASSERT_EQ( m_test_obj->get_parent(subnode), root);
     ASSERT_EQ( m_test_obj->get_tag(subnode), tag);
-    ASSERT_EQ( m_test_obj->get_subnodes(subnode).empty(), true);
-    ASSERT_EQ( m_test_obj->get_subnodes(root).size(),1u);
-    ASSERT_EQ( m_test_obj->get_subnodes(root)[0],subnode);
+    auto subnode_subs = m_test_obj->get_subnodes(subnode);
+    ASSERT_EQ( std::distance(subnode_subs.first,subnode_subs.second), 0);
+    auto root_subs = m_test_obj->get_subnodes(root);
+    ASSERT_EQ( std::distance(root_subs.first,root_subs.second),1u);
+    ASSERT_EQ( *root_subs.first,subnode);
   }
 
   //TEST SUITE
@@ -89,14 +91,16 @@ namespace {
 
     ASSERT_EQ( m_test_obj->get_parent(subnode), root);
     ASSERT_EQ( m_test_obj->get_tag(subnode), tag);
-    ASSERT_EQ( m_test_obj->get_subnodes(subnode).empty(), true);
+    auto subnode_subs = m_test_obj->get_subnodes(subnode);
+    ASSERT_EQ( std::distance(subnode_subs.first,subnode_subs.second), 0);
     ASSERT_EQ( m_test_obj->get_parent(subnode_2), root);
     ASSERT_EQ( m_test_obj->get_tag(subnode_2), tag2);
-    ASSERT_EQ( m_test_obj->get_subnodes(subnode_2).empty(), true);
+    auto subnode_subs2 = m_test_obj->get_subnodes(subnode);
+    ASSERT_EQ( std::distance(subnode_subs2.first,subnode_subs2.second), 0);
     auto root_subnodes = m_test_obj->get_subnodes(root);
-    ASSERT_EQ( root_subnodes.size(),2u);
-    ASSERT_EQ( std::count(root_subnodes.begin(),root_subnodes.end(),subnode),1u);
-    ASSERT_EQ( std::count(root_subnodes.begin(),root_subnodes.end(),subnode_2),1u);
+    ASSERT_EQ( std::distance(root_subnodes.first,root_subnodes.second),2u);
+    ASSERT_EQ( std::count(root_subnodes.first,root_subnodes.second,subnode),1u);
+    ASSERT_EQ( std::count(root_subnodes.first,root_subnodes.second,subnode_2),1u);
   }
 
   //TEST SUITE
@@ -109,19 +113,21 @@ namespace {
     tag_t tag2 {2};
     auto root = m_test_obj->get_root();
     auto subnode = m_test_obj->get_subnode(root, tag);
-    auto subnode_2 = m_test_obj->get_subnode(subnode, tag2);
+    auto subnode2 = m_test_obj->get_subnode(subnode, tag2);
 
+    auto root_subs = m_test_obj->get_subnodes(root);
+    ASSERT_EQ( std::distance(root_subs.first,root_subs.second),1u);
+    ASSERT_EQ( std::count(root_subs.first,root_subs.second,subnode),1u);
+    auto subnode_subs = m_test_obj->get_subnodes(subnode);
     ASSERT_EQ( m_test_obj->get_parent(subnode), root);
     ASSERT_EQ( m_test_obj->get_tag(subnode), tag);
-    ASSERT_EQ( m_test_obj->get_subnodes(subnode).size(), 1);
-    ASSERT_EQ( m_test_obj->get_parent(subnode_2), subnode);
-    ASSERT_EQ( m_test_obj->get_tag(subnode_2), tag2);
-    ASSERT_EQ( m_test_obj->get_subnodes(subnode_2).empty(), true);
-    auto root_subnodes = m_test_obj->get_subnodes(root);
-    auto subnode_subnodes = m_test_obj->get_subnodes(subnode);
-    ASSERT_EQ( root_subnodes.size(),1u);
-    ASSERT_EQ( std::count(root_subnodes.begin(),root_subnodes.end(),subnode),1u);
-    ASSERT_EQ( std::count(subnode_subnodes.begin(),subnode_subnodes.end(),subnode_2),1u);
+    ASSERT_EQ( std::distance(subnode_subs.first,subnode_subs.second), 1);
+    ASSERT_EQ( std::count(subnode_subs.first,subnode_subs.second,subnode2),1u);
+    auto subnode2_subs = m_test_obj->get_subnodes(subnode2);
+    ASSERT_EQ( m_test_obj->get_parent(subnode2), subnode);
+    ASSERT_EQ( m_test_obj->get_tag(subnode2), tag2);
+    ASSERT_EQ( std::distance(subnode2_subs.first,subnode2_subs.second), 0);
+
   }
 
   //TEST SUITE
@@ -138,10 +144,11 @@ namespace {
     ASSERT_EQ(subnode,subnode_2);
     ASSERT_EQ( m_test_obj->get_parent(subnode), root);
     ASSERT_EQ( m_test_obj->get_tag(subnode), tag);
-    ASSERT_EQ( m_test_obj->get_subnodes(subnode).empty(), true);
+    auto subnode_subs = m_test_obj->get_subnodes(subnode);
+    ASSERT_EQ( std::distance(subnode_subs.first,subnode_subs.second), 0);
     auto root_subnodes = m_test_obj->get_subnodes(root);
-    ASSERT_EQ( root_subnodes.size(),1u);
-    ASSERT_EQ( std::count(root_subnodes.begin(),root_subnodes.end(),subnode),1u);
+    ASSERT_EQ( std::distance(root_subnodes.first,root_subnodes.second),1u);
+    ASSERT_EQ( std::count(root_subnodes.first,root_subnodes.second,subnode),1u);
   }
   
   auto test_objects = Values( NEW_TEST_OBJ(HashPathPool<int>,root_tag),

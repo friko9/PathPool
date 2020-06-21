@@ -1,11 +1,13 @@
 #ifndef PATH_POOL_H
 #define PATH_POOL_H
 
-#include "./field_ref_iterator.h"
+#include "field_ref_iterator.h"
 
 #include <unordered_map>
 #include <string>
 #include <vector>
+
+#include <functional>
 
 template<typename TagT, template<typename T> class AllocatorT, typename HashF,typename EqualsF> 
 class HashPathPool;
@@ -21,7 +23,9 @@ class HashPathPool
   // TagT must be Erasable, CopyInsertable, allow for: unordered_map::hasher(TagT), TagT == TagT
   struct node_t;
   using ContainerT = typename std::vector<node_t,AllocatorT<node_t>>;
+  using PoolT = HashPathPool<TagT,AllocatorT,HashF,EqualsF>;
 public:
+  class iterator_t;
   using tag_t = TagT;
   using pathid_t = typename ContainerT::size_type;
 public:
@@ -40,7 +44,11 @@ public:
       m_nodes.push_back(node_t{subnode,path,{}});
     return result.first->second;
   }
-  template<typename ResultT = std::vector<pathid_t>>
+  std::pair<iterator_t,iterator_t> get_subnodes(pathid_t path) const
+  {
+    return { iterator_t{m_nodes[path].cbegin()}, iterator_t{m_nodes[path].cend()}};
+  }
+  template<typename ResultT>
   ResultT get_subnodes(pathid_t path) const
   {
     ResultT result;
@@ -62,6 +70,38 @@ public:
   {
     return rootid;
   }
+public:
+  class iterator_t
+  {
+    using it_t = typename node_t::MapT::const_iterator;
+  public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = pathid_t;
+    using difference_type = decltype (std::declval<value_type>() - std::declval<value_type>());
+    using pointer = value_type*;
+    using reference = value_type&;
+  public:
+    explicit
+    iterator_t(it_t it):
+      m_it{it}
+    {}
+    ~iterator_t(){};
+    value_type operator *(){return m_it->second;}
+    iterator_t& operator ++(){ ++m_it; return *this; };
+    iterator_t operator ++(int){ iterator_t result = *this; ++*this; return result; }
+    iterator_t& operator --(){ return --m_it; };
+    iterator_t operator --(int){ iterator_t result = *this; --*this; return result; }
+    bool operator ==(iterator_t const& r) const
+    {
+      return m_it == r.m_it;
+    }
+    bool operator !=(iterator_t const& r) const
+    {
+      return m_it != r.m_it;
+    }
+  private:
+    it_t m_it;
+  };
 private:
   struct node_t : public std::unordered_map<tag_t, pathid_t, HashF, EqualsF, AllocatorT<std::pair<tag_t,pathid_t>>>
   {
@@ -87,8 +127,10 @@ class ListPathPool
   // TagT is EmplaceConstructible - EmplaceConstructible is well formed
   // TagT must be Erasable, CopyInsertable, allow for: unordered_map::hasher(TagT), TagT == TagT
   struct node_t;
+  using PoolT =  ListPathPool<TagT,AllocatorT>;
   using ContainerT = typename std::vector<node_t,AllocatorT<node_t>>;
 public:
+  struct iterator_t;
   using tag_t = TagT;
   using pathid_t = typename ContainerT::size_type;
 public:
@@ -108,7 +150,11 @@ public:
 	return node;
     return insert_subnode(path,subnode);
   }
-  template<typename ResultT = std::vector<pathid_t>>
+  std::pair<iterator_t,iterator_t> get_subnodes(pathid_t path) const
+  {
+    return { iterator_t{m_nodes[path].m_child, *this } , iterator_t{ null, *this}  };
+  }
+  template<typename ResultT>
   ResultT get_subnodes(pathid_t path) const
   {
     ResultT result;
@@ -135,6 +181,40 @@ private:
     m_nodes.push_back(node_t{subnode,path,m_nodes[path].m_child,null});
     return m_nodes[path].m_child = i;
   }
+  pathid_t get_next_sibling(pathid_t path) const
+  {
+    return m_nodes[path].m_sibling;
+  }
+public:
+  struct iterator_t
+  {
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = pathid_t;
+    using difference_type = decltype (std::declval<value_type>() - std::declval<value_type>());
+    using pointer = value_type*;
+    using reference = value_type&;
+  public:
+    explicit
+    iterator_t(value_type val,const PoolT& pool):
+      m_pool{pool},
+      m_val{val}
+    {}
+    ~iterator_t(){};
+    value_type operator *(){return m_val;}
+    iterator_t& operator ++(){ m_val = m_pool.get_next_sibling(m_val); return *this; };
+    iterator_t operator ++(int){ iterator_t result = *this; ++*this; return result; }
+    bool operator ==(iterator_t const& r) const
+    {
+      return (m_val == r.m_val) & (&m_pool == &r.m_pool);
+    }
+    bool operator !=(iterator_t const& r) const
+    {
+      return !(*this == r);
+    }
+  private:
+    const PoolT& m_pool;
+    value_type m_val;
+  };
 private:
   struct node_t
   {
@@ -157,7 +237,7 @@ private:
 
 template<typename PathPoolT>
 std::vector<typename PathPoolT::tag_t>
-to_taglist(const PathPoolT& pool,typename PathPoolT::pathid_t path)
+get_taglist(const PathPoolT& pool,typename PathPoolT::pathid_t path)
 {
   std::vector<typename PathPoolT::tag_t> result;  
   for(; path != PathPoolT::root; path = pool.get_parent(path))
@@ -165,4 +245,5 @@ to_taglist(const PathPoolT& pool,typename PathPoolT::pathid_t path)
   result.push_back(pool.get_tag(path));
   return result;
 }
+
 #endif /* PATH_POOL_H */

@@ -50,11 +50,12 @@ namespace {
 	auto second = x.second;
 	ASSERT_EQ(m_test_obj1->get_tag(first),m_test_obj2->get_tag(second));
 	ASSERT_EQ(m_test_obj1->get_parent(first),m_test_obj2->get_parent(second));
-	auto subs1 = m_test_obj1->get_subnodes(first);
-	auto subs2 = m_test_obj2->get_subnodes(second);
+	std::vector<pathid_t> subs1, subs2;
+	std::copy(m_test_obj1->get_subnodes(first).first,m_test_obj1->get_subnodes(first).second,std::back_inserter(subs1));
+	std::copy(m_test_obj2->get_subnodes(first).first,m_test_obj2->get_subnodes(first).second,std::back_inserter(subs2));
 	ASSERT_EQ(subs1.size(),subs2.size());
-	std::sort(subs1.begin(),subs1.end());
-	std::sort(subs2.begin(),subs2.end());
+	std::stable_sort(subs1.begin(),subs1.end());
+	std::stable_sort(subs2.begin(),subs2.end());
 	ASSERT_TRUE( std::equal(subs1.begin(), subs1.end(), subs2.begin(), subs2.end()));
       }
   };

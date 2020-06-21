@@ -34,5 +34,6 @@ endfunction()
 
 add_subdirectory(includes)
 add_subdirectory(pathpool)
+#add_subdirectory(path)
 
 setup_target_for_coverage_lcov(NAME coverage EXECUTABLE ctest -j ${PROCESSOR_COUNT}  EXCLUDE "utests/*" "/usr/*")
