@@ -13,52 +13,52 @@ namespace {
   using namespace std;
   using namespace testing;
   
-template<typename T>
-class GetTagList : public Test
-{
-public:
-  using TestObjT = T;
-  using tag_t = typename TestObjT::tag_t;
-  using path_t = typename TestObjT::pathid_t;
-public:
-  void SetUp() override
+  template<typename T>
+  class GetTagList : public Test
   {
-    root = test_obj.get_root();
-    r_t1 = test_obj.get_subnode(root,tag1);
-    r_t2 = test_obj.get_subnode(root,tag2);
-    r_t1_t1 = test_obj.get_subnode(r_t1,tag1);
-    r_t1_t2 = test_obj.get_subnode(r_t1,tag2);
-    r_t2_t1 = test_obj.get_subnode(r_t2,tag1);
-    r_t2_t2 = test_obj.get_subnode(r_t2,tag2);
-    r_t1_t1_t1 = test_obj.get_subnode(r_t1_t1,tag1);
-    r_t1_t1_t2 = test_obj.get_subnode(r_t1_t1,tag2);
-    r_t1_t2_t1 = test_obj.get_subnode(r_t1_t2,tag1);
-    r_t1_t2_t2 = test_obj.get_subnode(r_t1_t2,tag2);
-    r_t2_t1_t1 = test_obj.get_subnode(r_t2_t1,tag1);
-    r_t2_t1_t2 = test_obj.get_subnode(r_t2_t1,tag2);
-    r_t2_t2_t1 = test_obj.get_subnode(r_t2_t2,tag1);
-    r_t2_t2_t2 = test_obj.get_subnode(r_t2_t2,tag2);
-  }
-public:
-  TestObjT test_obj {0};
-  tag_t tag1 {1};
-  tag_t tag2 {2};
-  path_t root;
-  path_t r_t1;
-  path_t r_t2;
-  path_t r_t1_t1;
-  path_t r_t1_t2;
-  path_t r_t2_t1;
-  path_t r_t2_t2;
-  path_t r_t1_t1_t1;
-  path_t r_t1_t1_t2;
-  path_t r_t1_t2_t1;
-  path_t r_t1_t2_t2;
-  path_t r_t2_t1_t1;
-  path_t r_t2_t1_t2;
-  path_t r_t2_t2_t1;
-  path_t r_t2_t2_t2;
-};
+  public:
+    using TestObjT = T;
+    using tag_t = typename TestObjT::tag_t;
+    using path_t = typename TestObjT::pathid_t;
+  public:
+    void SetUp() override
+    {
+      root = test_obj.get_root();
+      r_t1 = test_obj.get_subnode(root,tag1);
+      r_t2 = test_obj.get_subnode(root,tag2);
+      r_t1_t1 = test_obj.get_subnode(r_t1,tag1);
+      r_t1_t2 = test_obj.get_subnode(r_t1,tag2);
+      r_t2_t1 = test_obj.get_subnode(r_t2,tag1);
+      r_t2_t2 = test_obj.get_subnode(r_t2,tag2);
+      r_t1_t1_t1 = test_obj.get_subnode(r_t1_t1,tag1);
+      r_t1_t1_t2 = test_obj.get_subnode(r_t1_t1,tag2);
+      r_t1_t2_t1 = test_obj.get_subnode(r_t1_t2,tag1);
+      r_t1_t2_t2 = test_obj.get_subnode(r_t1_t2,tag2);
+      r_t2_t1_t1 = test_obj.get_subnode(r_t2_t1,tag1);
+      r_t2_t1_t2 = test_obj.get_subnode(r_t2_t1,tag2);
+      r_t2_t2_t1 = test_obj.get_subnode(r_t2_t2,tag1);
+      r_t2_t2_t2 = test_obj.get_subnode(r_t2_t2,tag2);
+    }
+  public:
+    TestObjT test_obj {0};
+    tag_t tag1 {1};
+    tag_t tag2 {2};
+    path_t root;
+    path_t r_t1;
+    path_t r_t2;
+    path_t r_t1_t1;
+    path_t r_t1_t2;
+    path_t r_t2_t1;
+    path_t r_t2_t2;
+    path_t r_t1_t1_t1;
+    path_t r_t1_t1_t2;
+    path_t r_t1_t2_t1;
+    path_t r_t1_t2_t2;
+    path_t r_t2_t1_t1;
+    path_t r_t2_t1_t2;
+    path_t r_t2_t2_t1;
+    path_t r_t2_t2_t2;
+  };
 
   using types = Types<ListPathPool<int>,HashPathPool<int>>;
   TYPED_TEST_CASE(GetTagList, types);

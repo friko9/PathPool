@@ -1,4 +1,3 @@
-#include "testobj.h"
 #include "path_pool.h"
 #include "utest.h"
 
@@ -6,63 +5,59 @@
 #include <functional>
 #include <random>
 
-using namespace std::string_literals;
-
 using namespace std;
 using namespace testing;
-
-class CrosscompLong : public TestWithParam<std::tuple<const TestObjBase<int>*,const TestObjBase<int>*>>
-{
-  void SetUp() override
-  {
-    m_test_obj1.reset(get<0>(this->GetParam())->clone());
-    m_test_obj2.reset(get<1>(this->GetParam())->clone()); 
-  }
-public:
-  std::unique_ptr<TestObjBase<int>> m_test_obj1;
-  std::unique_ptr<TestObjBase<int>> m_test_obj2;
-};
+using types = Types<std::pair<ListPathPool<int>,HashPathPool<int>>>;
 
 namespace {
-  using tag_t = int;
-  using pathid_t = size_t;
-  tag_t root_tag {0};
-  
-  //TEST SUITE
-  //SUBJECT empty <PathPool>
-  //ACTION Insert 1 subnode for all consecutive nodes
-  //RESULT <PathPool> consistent
-  TEST_P(CrosscompLong, RandomInsertion)
+  template<typename T>
+  class CrossCompare : public Test
   {
-    auto rand = std::bind(std::uniform_int_distribution<size_t>{0}, std::default_random_engine{});
+  public:
+    using TestObjT1 = typename T::first_type;
+    using TestObjT2 = typename T::second_type;
+    static_assert(std::is_same<typename TestObjT1::tag_t,typename TestObjT2::tag_t>(),"tag_t missmatch - comparison is not possible");
+    static_assert(std::is_same<typename TestObjT1::pathid_t,typename TestObjT2::pathid_t>(),"pathid_t missmatch - comparison is not possible");
+    using tag_t = typename TestObjT1::tag_t;
+    using pathid_t = typename TestObjT1::pathid_t;
+    void SetUp() override
+    {
+      auto rand = std::bind(std::uniform_int_distribution<size_t>{0}, std::default_random_engine{});
+      for( size_t i =1; i< 10000; ++i)
+	{
+	  int index = rand() % i;
+	  auto first = test_obj1.get_subnode(index, i);
+	  auto second  = test_obj2.get_subnode(index, i);
+	  paths.push_back({first,second});
+	}
+    }
+  public:
+    TestObjT1 test_obj1;
+    TestObjT2 test_obj2;
     vector<std::pair<pathid_t,pathid_t>> paths;
-    for( size_t i =1; i< 1000000; ++i)
-      {
-	int index = rand() % i;
-	auto first = m_test_obj1->get_subnode(index, i);
-	auto second  = m_test_obj2->get_subnode(index, i);
-	paths.push_back({first,second});
-      }
-
-    for( auto& x : paths )
+    std::vector<pathid_t> subs1, subs2;
+  };
+  TYPED_TEST_CASE(CrossCompare, types);
+  
+  TYPED_TEST(CrossCompare, RandomInsertion)
+  {
+    using pathid_t = typename TypeParam::first_type::pathid_t;
+    auto& test_obj1 = this->test_obj1;
+    auto& test_obj2 = this->test_obj2;
+    auto& subs1 = this->subs1;
+    auto& subs2 = this->subs2;
+    for( auto& x : this->paths )
       {
 	auto first = x.first;
 	auto second = x.second;
-	ASSERT_EQ(m_test_obj1->get_tag(first),m_test_obj2->get_tag(second));
-	ASSERT_EQ(m_test_obj1->get_parent(first),m_test_obj2->get_parent(second));
-	std::vector<pathid_t> subs1, subs2;
-	std::copy(m_test_obj1->get_subnodes(first).first,m_test_obj1->get_subnodes(first).second,std::back_inserter(subs1));
-	std::copy(m_test_obj2->get_subnodes(first).first,m_test_obj2->get_subnodes(first).second,std::back_inserter(subs2));
+	ASSERT_EQ(test_obj1.get_tag(first), test_obj2.get_tag(second));
+	ASSERT_EQ(test_obj1.get_parent(first), test_obj2.get_parent(second));
+	subs1 = test_obj1.template get_subnodes<vector<pathid_t>>(first);
+	subs2 = test_obj2.template get_subnodes<vector<pathid_t>>(second);
 	ASSERT_EQ(subs1.size(),subs2.size());
 	std::stable_sort(subs1.begin(),subs1.end());
 	std::stable_sort(subs2.begin(),subs2.end());
-	ASSERT_TRUE( std::equal(subs1.begin(), subs1.end(), subs2.begin(), subs2.end()));
+	ASSERT_TRUE( equals(subs1, subs2));
       }
   };
-
-  auto test_objects = Values( NEW_TEST_OBJ(HashPathPool<int>,root_tag),
-			      NEW_TEST_OBJ(ListPathPool<int>,root_tag));
-
-  INSTANTIATE_TEST_CASE_P(PathPools, CrosscompLong,
-			  Combine( test_objects, test_objects));
 }

@@ -2,95 +2,103 @@
 #define ITERATOR_SHORT_H
 
 #include "utest.h"
-#include "testobj.h"
 #include "path_pool.h"
 
 #include <gtest/gtest.h>
 
-using namespace std::string_literals;
-
 using namespace std;
 using namespace testing;
+using types = Types<ListPathPool<int>,HashPathPool<int>>;
 
 namespace {
-
-  class Iterators : public TestWithParam<const TestObjBase<int>*>
+  template<typename T>
+  class IteratorEmptyRange : public Test
   {
   public:
+    using TestObjT = T;
+    using tag_t = typename TestObjT::tag_t;
+    using path_t = typename TestObjT::pathid_t;
     void SetUp() override
-    {
-      m_test_obj = (this->GetParam())->clone();
-    }
-    void TearDown() override
-    {
-      delete m_test_obj;
-    }
+    {}
   public:
-    TestObjBase<int>* m_test_obj;
+    TestObjT test_obj;
   };
-
-  using tag_t = int;
-  tag_t root_tag = 0;
+  TYPED_TEST_CASE(IteratorEmptyRange, types);
   
-  //TEST SUITE
-  //SUBJECT empty <PathPool>
-  //RESULT root subnodes range start = end
-  TEST_P(Iterators, EmptyRange)
+  TYPED_TEST(IteratorEmptyRange, BeginOverlapsEnd)
   {
-    auto root = m_test_obj->get_root();
-    auto root_subs = m_test_obj->get_subnodes(root);
+    auto& test_obj = this->test_obj;
+    auto root = test_obj.get_root();
+    auto root_subs = test_obj.get_subnodes(root);
     ASSERT_EQ(root_subs.first,root_subs.second);
-    auto root_subs2 = m_test_obj->get_subnodes(root);
+  }
+  TYPED_TEST(IteratorEmptyRange, ConsecutiveCallsAreEqual)
+  {
+    auto& test_obj = this->test_obj;
+    auto root = test_obj.get_root();
+    auto root_subs = test_obj.get_subnodes(root);
+    auto root_subs2 = test_obj.get_subnodes(root);
     ASSERT_EQ(root_subs2.first,root_subs.first);
     ASSERT_EQ(root_subs2.first,root_subs.second);
   }
-
-  //TEST SUITE
-  //SUBJECT populated <PathPool>
-  //RESULT root subnodes range doesn't change
-  TEST_P(Iterators, EqualRanges)
+}
+namespace {
+  template<typename T>
+  class IteratorPopulatedRange : public Test
   {
-    auto root = m_test_obj->get_root();
-    m_test_obj->get_subnode(root,1);
-    //Test
-    auto root_subs = m_test_obj->get_subnodes(root);
-    auto root_subs2 = m_test_obj->get_subnodes(root);
-    ASSERT_EQ(root_subs2.first,root_subs.first);
-    ASSERT_EQ(root_subs2.second,root_subs.second);
-  }
-
-  //TEST SUITE
-  //SUBJECT populated <PathPool>
-  //RESULT proper prefix incrementation
-  TEST_P(Iterators, PrefixIncrement)
+  public:
+    using TestObjT = T;
+    using tag_t = typename TestObjT::tag_t;
+    using pathid_t = typename TestObjT::pathid_t;
+    void SetUp() override
+    {
+      auto root = test_obj.get_root();
+      test_obj.get_subnode(root,1);
+      test_obj.get_subnode(root,2);
+    }
+  public:
+    TestObjT test_obj;
+  };
+  TYPED_TEST_CASE(IteratorPopulatedRange, types);
+  
+  TYPED_TEST(IteratorPopulatedRange, ConsecutiveCallsAreEqual)
   {
-    auto root = m_test_obj->get_root();
-    m_test_obj->get_subnode(root,1);
-    //Test
-    auto root_subs = m_test_obj->get_subnodes(root);
-    ASSERT_EQ(++root_subs.first,root_subs.second);
+    auto& test_obj = this->test_obj;
+    auto root = test_obj.get_root();
+    auto root_subs = test_obj.get_subnodes(root);
+    auto root_subs2 = test_obj.get_subnodes(root);
+    ASSERT_EQ(root_subs.first,root_subs2.first);
+    ASSERT_EQ(root_subs.second,root_subs2.second);
   }
-
-  //TEST SUITE
-  //SUBJECT populated <PathPool>
-  //RESULT proper postfix incrementation
-  TEST_P(Iterators, PostfixIncrement)
+  TYPED_TEST(IteratorPopulatedRange, PrefixIncrementWorks)
   {
-    auto root = m_test_obj->get_root();
-    m_test_obj->get_subnode(root,1);
-    //Test
-    auto root_subs = m_test_obj->get_subnodes(root);
-    auto root_subs2 = m_test_obj->get_subnodes(root);
-    ASSERT_EQ(root_subs2.first++,root_subs.first);
+    auto& test_obj = this->test_obj;
+    auto root = test_obj.get_root();
+    auto root_subs = test_obj.get_subnodes(root);
+    auto it = root_subs.first;
+    ASSERT_EQ(std::distance(root_subs.first,++it), 1);
+    it = root_subs.first;
+    ASSERT_EQ(std::distance(++it,root_subs.second), 1);
+    it = root_subs.first;
+    ASSERT_EQ(std::distance(root_subs.first,++(++it)), 2);    
+    it = root_subs.first;
+    ASSERT_EQ(++(++it),root_subs.second);
   }
-
-  auto test_objects = Values( NEW_TEST_OBJ_DEFAULT(HashPathPool<tag_t>),
-			      NEW_TEST_OBJ_DEFAULT(ListPathPool<tag_t>),
-			      NEW_TEST_OBJ(HashPathPool<int>,root_tag),
-			      NEW_TEST_OBJ(ListPathPool<int>,root_tag));
-
-  //TEST DATASET
-  INSTANTIATE_TEST_CASE_P(PathPools, Iterators, test_objects );
+  TYPED_TEST(IteratorPopulatedRange, PostfixIncrement)
+  {
+    auto& test_obj = this->test_obj;
+    auto root = test_obj.get_root();
+    auto root_subs = test_obj.get_subnodes(root);
+    auto it = root_subs.first;
+    ASSERT_EQ(std::distance(root_subs.first,it++), 0);
+    ASSERT_EQ(std::distance(root_subs.first,it), 1);
+    it = root_subs.first;
+    ASSERT_EQ(std::distance(root_subs.first,it++), 0);
+    ASSERT_EQ(std::distance(root_subs.first,it), 1);
+    it = root_subs.first;
+    ASSERT_EQ(std::distance(root_subs.first,(it++)++), 0);
+    ASSERT_EQ(std::distance(root_subs.first,(it++)++), 1);
+  }
 }
 
 #endif /* ITERATOR_SHORT_H */
