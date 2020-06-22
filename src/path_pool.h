@@ -238,7 +238,7 @@ std::vector<typename PathPoolT::tag_t>
 get_taglist(const PathPoolT& pool,typename PathPoolT::pathid_t path)
 {
   std::vector<typename PathPoolT::tag_t> result;  
-  for(; path != PathPoolT::root; path = pool.get_parent(path))
+  for(; path != pool.get_root(); path = pool.get_parent(path))
     result.push_back(pool.get_tag(path));
   result.push_back(pool.get_tag(path));
   return result;
