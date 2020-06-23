@@ -5,8 +5,6 @@
 list(APPEND depends path_pool)
 list(APPEND depends utest_includes)
 
-list(APPEND files "testobj.h")
-
 list(APPEND files_short "empty_short.cpp")
 list(APPEND files_short "iterator_short.cpp")
 list(APPEND files_short "get_taglist_short.cpp")
