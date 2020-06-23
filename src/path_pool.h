@@ -194,23 +194,23 @@ public:
   public:
     explicit
     iterator_t(value_type val,const PoolT& pool):
-      m_pool{pool},
+      m_pool{&pool},
       m_val{val}
     {}
     ~iterator_t(){};
     value_type operator *(){return m_val;}
-    iterator_t& operator ++(){ m_val = m_pool.get_next_sibling(m_val); return *this; };
+    iterator_t& operator ++(){ m_val = m_pool->get_next_sibling(m_val); return *this; };
     iterator_t operator ++(int){ iterator_t result = *this; ++*this; return result; }
     bool operator ==(iterator_t const& r) const
     {
-      return (m_val == r.m_val) & (&m_pool == &r.m_pool);
+      return (m_val == r.m_val) & (m_pool == r.m_pool);
     }
     bool operator !=(iterator_t const& r) const
     {
       return !(*this == r);
     }
   private:
-    const PoolT& m_pool;
+    const PoolT* m_pool;
     value_type m_val;
   };
 private:
