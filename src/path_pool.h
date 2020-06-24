@@ -250,12 +250,14 @@ get_common_path(typename PoolT::pathid_t l, typename PoolT::pathid_t r, PoolT& p
 {
   auto pl = p.get_parent(l);
   auto pr = p.get_parent(r);
-  while( (pl != pr) & (pl != r) )
+  while( (pl != pr) & (pl != r) & (pr != l) )
     {
-      if ( pl == r ) { pl = pr; break; }
-      pl = (pl > pr )? l=pl, pl = get_parent(pl) : pl;
-      pl = (pl < pr )? r=pr, pr = get_parent(pr) : pr;
+      if(pl > pr )
+	std::tie(l,pl) = std::make_tuple(pl,p.get_parent(pl));
+      else
+	std::tie(r,pr) = std::make_tuple(pr,p.get_parent(pr));
     }
+  pl = (pr == l)? l : pl;
   return {pl,l,r};
 }
 
