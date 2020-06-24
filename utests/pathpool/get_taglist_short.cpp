@@ -5,14 +5,13 @@
 #include "path_pool.h"
 
 #include <gtest/gtest.h>
-
 #include <algorithm>
 
-namespace {
-  using namespace std::string_literals;
-  using namespace std;
-  using namespace testing;
-  
+using namespace std;
+using namespace testing;
+
+using types = Types<ListPathPool<int>,HashPathPool<int>>;
+namespace {  
   template<typename T>
   class GetTagList : public Test
   {
@@ -59,21 +58,12 @@ namespace {
     path_t r_t2_t2_t1;
     path_t r_t2_t2_t2;
   };
-
-  using types = Types<ListPathPool<int>,HashPathPool<int>>;
   TYPED_TEST_CASE(GetTagList, types);
-
-  template<typename T1,typename T2>
-  bool equals(T1 const& cont1, initializer_list<T2> cont2)
-  {
-    return std::equal(cont1.begin(),cont1.end(),cont2.begin(),cont2.end());
-  }
 
   TYPED_TEST(GetTagList, Root)
   {
-    auto expect = {0};
     auto result = get_taglist(this->test_obj, this->root);
-    ASSERT_TRUE( equals(result, expect) );
+    ASSERT_TRUE( equals(result, {0}) );
   }
   TYPED_TEST(GetTagList, Children)
   {

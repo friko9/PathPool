@@ -8,6 +8,7 @@ list(APPEND depends utest_includes)
 list(APPEND files_short "empty_short.cpp")
 list(APPEND files_short "iterator_short.cpp")
 list(APPEND files_short "get_taglist_short.cpp")
+list(APPEND files_short "get_common_path_short.cpp")
 list(APPEND files_short ${files})
 
 list(APPEND files_long "vergecase_long.cpp")
