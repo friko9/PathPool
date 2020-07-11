@@ -34,6 +34,6 @@ endfunction()
 
 add_subdirectory(includes)
 add_subdirectory(pathpool)
-#add_subdirectory(path)
+add_subdirectory(path)
 
 setup_target_for_coverage(NAME coverage EXECUTABLE ctest -j ${PROCESSOR_COUNT}  EXCLUDE "utests/*" "/usr/*" "external/*" "perftest/*")
