@@ -31,12 +31,8 @@ public:
     m_path{s_pool.get_root()}
   {}
   Path(const Path& parent, tag_t name):
-    m_path{ s_pool.get_subnode(parent, name)}
+    m_path{ s_pool.get_subnode(parent.m_path, name)}
   {}
-  Path(const Path&) = default;
-  Path(Path&&) = default;
-  Path& operator =(const Path&) = default;
-  Path& operator =(Path&&) = default;
   Path operator /(const tag_t& t)
   {
     return Path { *this, t };
@@ -107,7 +103,7 @@ public:
     }
     bool operator !=(iterator_t const& r) const
     {
-      return m_it != r.m_it;
+      return !(*this == r);
     }
   private:
     Path m_it {};
