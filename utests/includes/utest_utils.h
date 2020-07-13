@@ -69,15 +69,28 @@ bool equals(T1 const& cont1, std::initializer_list<T2> cont2)
 }
 
 template<typename T1,typename T2>
-bool contains_all(std::pair<T1,T1> cont1, T2 cont2)
+bool contains_all(T1 begin, T1 end, T2 cont2)
 {
   return std::all_of(cont2.begin(),cont2.end(),
-		     [&cont1](auto x){ return std::find(cont1.first,cont1.second,x) != cont1.second; });
+		     [begin,end](auto x){ return std::find(begin,end,x) != end; });
 }
+
+template<typename T1,typename T2>
+bool contains_all(std::pair<T1,T1> cont1, T2 cont2)
+{
+  return contains_all(cont1.first,cont1.second,cont2);
+}
+
 template<typename T1,typename T2>
 bool contains_all(T1 const& cont1, T2 cont2)
 {
-  return contains_all(std::make_pair(cont1.begin(),cont1.end()),cont2);
+  return contains_all(cont1.cbegin(),cont1.cend(),cont2);
+}
+
+template<typename T1,typename T2>
+bool contains_all(T1 const& cont1, std::initializer_list<T2> cont2)
+{
+  return contains_all(cont1.cbegin(),cont1.cend(),cont2);
 }
 
 #endif /*UTEST_UTILS_H*/
