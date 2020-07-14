@@ -10,7 +10,7 @@ template<typename PoolT,int poolno>
 class Path;
 
 template<typename PoolT,int poolno>
-Path<PoolT,poolno> common_path(const Path<PoolT,poolno> l, const Path<PoolT,poolno> r)
+Path<PoolT,poolno> common_path(const Path<PoolT,poolno>& l, const Path<PoolT,poolno>& r)
 {
   return l.s_pool.get_common(l.m_path,r.m_path)[0];
 }
@@ -20,7 +20,7 @@ class Path
 {
   friend
   Path<PoolT,poolno>
-  common_path<>(const Path<PoolT,poolno> l, const Path<PoolT,poolno> r);
+  common_path<>(const Path<PoolT,poolno>& l, const Path<PoolT,poolno>& r);
 private:
   using pathid_t = typename PoolT::pathid_t;
 public:
@@ -30,10 +30,10 @@ public:
   Path():
     m_path{s_pool.get_root()}
   {}
-  Path(const Path& parent, tag_t name):
+  Path(const Path& parent,const tag_t& name):
     m_path{ s_pool.get_subnode(parent.m_path, name)}
   {}
-  Path operator /(const tag_t& t)
+  Path operator /(const tag_t& t) const
   {
     return Path { *this, t };
   }
