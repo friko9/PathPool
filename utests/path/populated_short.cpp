@@ -86,7 +86,10 @@ namespace {
     for(size_t i=0;i < paths.size(); ++i)
       for(size_t j=0;j < paths.size(); ++j)
 	if(i < j)
-	  ASSERT_LT( paths[i], paths[j] )<<"i = "<<i<<",j = "<<j;
+	  {
+	    ASSERT_LT( paths[i], paths[j] )<<"i = "<<i<<",j = "<<j;
+	    ASSERT_FALSE( paths[j] < paths[i] )<<"i = "<<i<<",j = "<<j;
+	  }
 	else
 	  ASSERT_FALSE( paths[i] < paths[j] )<<"i = "<<i<<",j = "<<j;
   }
@@ -160,13 +163,8 @@ namespace {
     auto range_t2_t2_t1 = std::make_pair( this->r_t2_t2_t1.begin(), this->r_t2_t2_t1.end());
     auto range_t2_t2_t2 = std::make_pair( this->r_t2_t2_t2.begin(), this->r_t2_t2_t2.end());
 
-    // ASSERT_EQ( distance(range_t1.first,range_t1.second), 1);
-    // ASSERT_EQ( distance(range_t2.first,range_t2.second), 1);
-    // ASSERT_EQ( *range_t1.first, 1);
-    // ASSERT_EQ( *range_t2.first, 2);
     ASSERT_TRUE( equals(range_t1, {this->r_t1}));
     ASSERT_TRUE( equals(range_t2, {this->r_t2}));
-    
     ASSERT_TRUE( equals(range_t1_t1, {this->r_t1_t1, this->r_t1}));
     ASSERT_TRUE( equals(range_t1_t2, {this->r_t1_t2, this->r_t1}));
     ASSERT_TRUE( equals(range_t2_t1, {this->r_t2_t1, this->r_t2}));
@@ -175,7 +173,6 @@ namespace {
     ASSERT_TRUE( equals(range_t1_t1_t2, {this->r_t1_t1_t2, this->r_t1_t1, this->r_t1}));
     ASSERT_TRUE( equals(range_t1_t2_t1, {this->r_t1_t2_t1, this->r_t1_t2, this->r_t1}));
     ASSERT_TRUE( equals(range_t1_t2_t2, {this->r_t1_t2_t2, this->r_t1_t2, this->r_t1}));
-
     ASSERT_TRUE( equals(range_t2_t1_t1, {this->r_t2_t1_t1, this->r_t2_t1, this->r_t2}));
     ASSERT_TRUE( equals(range_t2_t1_t2, {this->r_t2_t1_t2, this->r_t2_t1, this->r_t2}));
     ASSERT_TRUE( equals(range_t2_t2_t1, {this->r_t2_t2_t1, this->r_t2_t2, this->r_t2}));
