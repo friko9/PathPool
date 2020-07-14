@@ -4,7 +4,7 @@
 
 ## Rationale
 
-PathPool concept aims to minimize computional costs for storing and operating on multiple path entries in the system.
+PathPool concept aims to minimize computational costs for storing and operating on multiple path entries in the system.
 
 Each path in any given namespace must have following qualities:
 
@@ -24,47 +24,74 @@ Each path can be described as:
  1. string describing full path
  2. linked list of tags describing full path
  3. a pair of:
-   * reference to parent path
-   * tag - element expanding parent path
+
+	* reference to parent path
+	* tag - element expanding parent path
 
 ## Implementation
 
 The most memory efficient solution is a pool of paths described as pairs <parent path, expanding tag>. It allows for sharing prefixes for all paths in a pool so adding a path has memory complexity of O(1), as new memory is allocated only for the expanding tag - instead the whole path. Pair <parent path, expanding tag> can uniquely describe a path and in consequence be coupled to unique path id.
-Path pools describe its paths similar to flyweight design pattern. Despite its memory savings flyweights, have also optimal computional cost for copying, moving, and equality-comparison operations. Efficiency loss occurs on path-string retrival.
+Path pools describe its paths similar to flyweight design pattern. Despite its memory savings flyweights, have also optimal computational cost for copying, moving, and equality-comparison operations. Efficiency loss occurs on path-string retrieval.
 
 A design emerges where each node is defined once, and sub-paths contain only reference to their parent node - this leads to a centralized path pool register with tree-like structures.
-Each path is a list with head pointing at its least significant tag. Head tag may be shared only with its subpaths. Head may be accessed using its id (`pathid_t`). Next node in the list is head's parent node. Last element of a list is root path shared by all paths in the pool. To allow for path operations, and local taversal, helper `get_*` methods are used.
+Each path is a list with head pointing at its least significant tag. Head tag may be shared only with its subpaths. Head may be accessed using its id (`pathid_t`). Next node in the list is head's parent node. Last element of a list is root path shared by all paths in the pool. To allow for path operations, and local traversal, helper `get_*` methods are used.
 
-## Interface description
+## PathPool classes
 
-All PathPool classes share a common interface - it is not formalized, as no inheritence is used.
+All PathPool classes share a common interface - it is not formalized, as no inheritance is used.
 
-User interaction is done with 2 types:
-
-- `tag_t` - defined by the user as template parameter. Type must allow for:
+### ``HashPathPool<TagT, AllocatorT, HashF, EqualsF>``
  
-  * copying
-  * equality comparison
-  * (for HashPathPool) hashing
+ Uses hash-map to store subnodes. Faster for pools with large number of subnodes with the same parent
+	 
+ * `TagT` 
  
-- `pathid_t` - explicitly describes a path. Allows for:
+ Stored type. `tag_t = TagT`
+ 
+ * `AllocatorT = std::allocator`
+ 
+ STL Allocator
+ 
+ * `HashF = std::hash<TagT>`
+ 
+ Hashing function.
+ 
+ * `EqualsF = std::equal_to<TagT>`
 
-  * path identification in the pool.
-  * comparison
-  * hashing
-  * value operations like assignment, copying
+ Equality predicate
 
+### ``ListPathPool<TagT, AllocatorT>``
+ 
+ Uses array linked-lists to store subnodes. Faster in most cases.
+	 
+ * `TagT` 
+ 
+ Stored type. `tag_t = TagT`
+
+ * `AllocatorT = std::allocator`
+ 
+ STL Allocator
+ 
 ### Defined types:
 
   * `tag_t = TagT`
   
-  Defines types paths are composed of
+  Defines types paths are composed of. Type must allow for:
+
+	* copying
+	* equality comparison
+	* (for HashPathPool) hashing
   
   * `pathid_t`
   
-  Defines path id, by which paths can be reffered to
+  Defines path-id which explicitly describes a path. Allows for:
 
-### Supported methods:
+	* path identification in the pool.
+	* comparison
+	* hashing
+	* value operations like assignment, copying
+
+### Methods:
 
   * `constructor()`
   
@@ -90,7 +117,7 @@ User interaction is done with 2 types:
 	
   * `get_tag(pathid_t path) const -> tag_t`
 
-	Returns a tag assosiated with a given path
+	Returns a tag associated with a given path
 	
   * `get_root() const noexcept -> pathid_t`
 
@@ -106,20 +133,69 @@ User interaction is done with 2 types:
 
     Returns 3 elements describing connection point of 2 paths `{common_node, left_subnode, right_subnode}`
 
-## Classes
+## Path class
 
-### ``HashPathPool<TagT, AllocatorT = std::allocator,HashF = std::hash<TagT>,EqualsF = std::equal_to<TagT>>``
- 
- Uses hashmap to store subnodes. Faster for pools with large number of subnodes with the same parent
-	 
- * `TagT = tag_t` - stored type
- * `AllocatorT` - STL Allocator
- * `HashF` - Hashing function
- * `EqualsF` - equality predicate
+### ``Path<PoolT,int poolno = 0>``
 
-### ``ListPathPool<TagT, AllocatorT = std::allocator>``
+Object representation of `pathid_t`. Takes only a space of `sizeof(pathid_t)`, and shares `PathPool` object for all its types. User cannot access `PathPool` object. Tag of root path. holds default value.
+
+ * `PoolT` - concrete PathPool class
+ * `poolno` - pool number. Allows creation of multiple pools of the same PoolT.
  
- Uses array linked-lists to store subnodes. Faster in most cases.
-	 
- * `TagT = tag_t` - stored type
- * `AllocatorT` - STL Allocator
+Example: `Path<ListPathPool<int>,0> root_1;`  
+Example: `Path<ListPathPool<int>,1> root_2;`  
+Example: `Path<HashPathPool<int>,0> root_3;`  
+
+`root_1`,`root_2`,`root_3` represent 3 different types and no interaction between them is possible.
+
+### Defined types
+
+ * `tag_t = PathPool::tag_t`
+ 
+ Defines type used for creating subpaths. tag_t must have default constructor.
+ 
+ * `iterator_t`
+
+ Forward-iterator used for traversing the path up.
+
+### Methods
+
+ * `constructor()`
+ 
+ Creates root path.
+ 
+ * `constructor(const Path&,const tag_t&)`
+ 
+ Creates subpath.
+ 
+ * `operator / (const tag_t&) const -> Path`
+ 
+ Creates subpath.
+ 
+ * `operator == (Path&) const -> bool`
+ 
+ * `operator < (Path&) const -> bool`
+ 
+ * `get_subpaths<ResultT = std::vector>() -> ResultT<Path>`
+ 
+ Returns all subpaths referenced from the called path.
+ 
+ * `get_parent() const -> Path`
+ 
+ * `get_tag() -> tag_t`
+ 
+ Returns tag given on path creation.
+ 
+ * `begin() -> iterator_t`
+ 
+ Returns iterator pointing at called Path.
+ 
+ * `end() -> iterator_t`
+ 
+ Returns iterator pointing at root Path.
+ 
+### Global functions
+
+ * `common_path(const Path&, const Path& r) -> Path`
+
+ Returns common path of its two arguments.
