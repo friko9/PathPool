@@ -6,15 +6,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container:
-      image: docker://thezxcv/gcc-cmake-gtest:latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
+    - name: update apt-list
+      run: sudo apt update
+    - name: install packages
+      run: yes | sudo apt install lcov googletest google-mock googletest-tools libgtest-dev
     - name: version-checking
-      run: gcc -v && g++ -v && cmake --version
+      run: gcc -v && g++ -v && cmake --version && lcov -v
     - name: configure
-      run: cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Coverage -Dversion=v0.0.0-github-build
+      run: cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Coverage -Dversion=v0.0.0-github-build -DCMAKE_VERBOSE_MAKEFILE=true
     - name: build
       run: cmake --build build
     - name: utest+coverage
