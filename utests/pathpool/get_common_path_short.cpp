@@ -1,6 +1,3 @@
-#ifndef GET_COMMON_PATH_SHORT_H
-#define GET_COMMON_PATH_SHORT_H
-
 #include "path_pool.h"
 #include "utest.h"
 
@@ -131,5 +128,3 @@ namespace {
     ASSERT_TRUE( equals(result, {this->r_t1,this->r_t1_t1,this->r_t1_t2}) );
   }
 }
-
-#endif /* GET_COMMON_PATH_SHORT_H */
