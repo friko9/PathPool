@@ -1,6 +1,3 @@
-#ifndef ITERATOR_SHORT_H
-#define ITERATOR_SHORT_H
-
 #include "utest.h"
 #include "path_pool.h"
 
@@ -100,5 +97,3 @@ namespace {
     ASSERT_EQ(std::distance(root_subs.first,(it++)++), 1);
   }
 }
-
-#endif /* ITERATOR_SHORT_H */

@@ -1,6 +1,5 @@
 #include "path.h"
 #include "path_pool.h"
-#include "utest.h"
 
 #include <gtest/gtest.h>
 
@@ -8,6 +7,8 @@ using namespace std;
 using namespace testing;
 
 namespace {
+  using types = Types<Path<ListPathPool<int>>,Path<HashPathPool<int>>>;
+  
   template<typename T>
   class DefaultEmpty : public Test
   {
@@ -18,7 +19,6 @@ namespace {
   public:
   };
   
-  using types = Types<Path<ListPathPool<int>>,Path<HashPathPool<int>>>;
   TYPED_TEST_CASE(DefaultEmpty, types);
 
   TYPED_TEST(DefaultEmpty, DefaultPathsAreEqual)

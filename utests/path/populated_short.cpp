@@ -1,20 +1,15 @@
-#ifndef POPULATED_SHORT_H
-#define POPULATED_SHORT_H
-
 #include "utest.h"
 #include "path.h"
 #include "path_pool.h"
-#include "field_ref_iterator.h"
 
 #include <gtest/gtest.h>
-#include <algorithm>
 
 using namespace std;
 using namespace testing;
 
-using types = Types<Path<ListPathPool<int>>,Path<HashPathPool<int>>>;
-
 namespace {  
+  using types = Types<Path<ListPathPool<int>>,Path<HashPathPool<int>>>;
+  
   template<typename T>
   class Populated : public Test
   {
@@ -45,8 +40,7 @@ namespace {
 		r_t1_t2, r_t1_t2_t1, r_t1_t2_t2,
 		r_t2,
 		r_t2_t1, r_t2_t1_t1, r_t2_t1_t2,
-		r_t2_t2, r_t2_t2_t1, r_t2_t2_t2
- };
+		r_t2_t2, r_t2_t2_t1, r_t2_t2_t2 };
     }
   public:
     tag_t tag1 {1};
@@ -214,5 +208,3 @@ namespace {
     ASSERT_EQ( range_t2_t2_t2.size(), 0);
   }
 }
-
-#endif /* POPULATED_SHORT_H */

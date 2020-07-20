@@ -1,6 +1,3 @@
-#ifndef GET_TAGLIST_SHORT_H
-#define GET_TAGLIST_SHORT_H
-
 #include "utest.h"
 #include "path_pool.h"
 
@@ -92,5 +89,3 @@ namespace {
     ASSERT_TRUE( equals(result8, {2,2,2,0}));
   }
 }
-
-#endif /* GET_TAGLIST_SHORT_H */
