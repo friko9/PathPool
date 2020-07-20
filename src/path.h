@@ -12,7 +12,7 @@ class Path;
 template<typename PoolT,int poolno>
 Path<PoolT,poolno> common_path(const Path<PoolT,poolno>& l, const Path<PoolT,poolno>& r)
 {
-  return l.s_pool.get_common(l.m_path,r.m_path)[0];
+  return Path<PoolT,poolno>{ get_common_path(l.m_path,r.m_path,l.s_pool)[0] };
 }
 
 template<typename PoolT,int poolno = 0>
