@@ -7,7 +7,7 @@ list(APPEND depends path_pool)
 list(APPEND depends utest_includes)
 
 list(APPEND files_short "empty_short.cpp")
-# list(APPEND files_short "iterator_short.cpp")
+list(APPEND files_short "iterator_short.cpp")
 list(APPEND files_short "populated_short.cpp")
 list(APPEND files_short "common_path_short.cpp")
 list(APPEND files_short ${files})
