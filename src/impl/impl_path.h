@@ -78,9 +78,25 @@ Path<PoolT,poolno>::begin()
 template<typename PoolT,int poolno>
 inline
 typename Path<PoolT,poolno>::vertical_iterator
+Path<PoolT,poolno>::cbegin() const
+{
+  return begin();
+}
+
+template<typename PoolT,int poolno>
+inline
+typename Path<PoolT,poolno>::vertical_iterator
 Path<PoolT,poolno>::end()
 {
   return vertical_iterator {};
+}
+
+template<typename PoolT,int poolno>
+inline
+typename Path<PoolT,poolno>::vertical_iterator
+Path<PoolT,poolno>::cend() const
+{
+  return end();
 }
 
 /////////////////////////
@@ -98,7 +114,10 @@ public:
   using pointer = value_type*;
   using reference = value_type&;
 public:
-  value_type operator *(){return Path{*m_it};}
+  value_type operator *()
+  {
+    return Path{*m_it};
+  }
   bool operator ==(horizontal_iterator const& r) const
   {
     return m_it == r.m_it;
@@ -144,7 +163,10 @@ public:
   {}
   vertical_iterator()
   {}
-  value_type operator *(){return m_it;}
+  value_type operator *()
+  {
+    return m_it;
+  }
   bool operator ==(vertical_iterator const& r) const
   {
     return m_it == r.m_it;

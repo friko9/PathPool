@@ -42,6 +42,8 @@ public:
   auto get_tag() const -> tag_t;
   auto begin() -> vertical_iterator;
   auto end() -> vertical_iterator;
+  auto cbegin() const -> vertical_iterator;
+  auto cend() const -> vertical_iterator;
 private:
   using pathid_t = typename PoolT::pathid_t;
 private:
