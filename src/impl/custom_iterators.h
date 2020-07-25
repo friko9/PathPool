@@ -1,5 +1,5 @@
-#ifndef FIELD_REF_ITERATOR_H
-#define FIELD_REF_ITERATOR_H
+#ifndef CUSTOM_ITERATORS_H
+#define CUSTOM_ITERATORS_H
 
 template<typename It_t,typename FieldRefT>
 struct field_ref_iterator : It_t
@@ -45,4 +45,4 @@ field_ref_iterator<It_t,FieldRefT> field_ref(It_t it, FieldRefT ref)
 //   return morphed_iterator<It_t,FuncT>{it,ref};
 // }
 
-#endif /* FIELD_REF_ITERATOR_H */
+#endif /* CUSTOM_ITERATORS_H */

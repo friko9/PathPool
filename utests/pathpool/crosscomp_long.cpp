@@ -44,16 +44,14 @@ namespace {
     using pathid_t = typename TypeParam::first_type::pathid_t;
     auto& test_obj1 = this->test_obj1;
     auto& test_obj2 = this->test_obj2;
-    auto& subs1 = this->subs1;
-    auto& subs2 = this->subs2;
     for( auto& x : this->paths )
       {
 	auto first = x.first;
 	auto second = x.second;
 	ASSERT_EQ(test_obj1.get_tag(first), test_obj2.get_tag(second));
 	ASSERT_EQ(test_obj1.get_parent(first), test_obj2.get_parent(second));
-	subs1 = test_obj1.template get_subnodes<vector<pathid_t>>(first);
-	subs2 = test_obj2.template get_subnodes<vector<pathid_t>>(second);
+	auto subs1 = test_obj1.get_subnodes(first,vector<pathid_t>{});
+	auto subs2 = test_obj2.get_subnodes(second,vector<pathid_t>{});
 	ASSERT_EQ(subs1.size(),subs2.size());
 	std::stable_sort(subs1.begin(),subs1.end());
 	std::stable_sort(subs2.begin(),subs2.end());

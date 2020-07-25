@@ -81,8 +81,7 @@ namespace {
     for( auto& x : this->paths)
       {
 	auto subnode = test_obj.get_subnode(root, x);
-	auto subs = test_obj.get_subnodes(subnode);
-	ASSERT_TRUE( empty(subs) );
+	ASSERT_TRUE( empty( test_obj.get_subnodes(subnode) ) );
       }
   }
 }
