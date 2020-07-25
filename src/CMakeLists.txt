@@ -19,12 +19,14 @@ target_include_directories(path_pool INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(path_pool INTERFACE ${pp_deps})
 
-message("Target: path_pool [done] \t <- ${pp_deps}")
+message("Target: path_pool [done]")
 
 ########
 # Path #
 ########
 list(APPEND path_headers "path.h")
+list(APPEND path_headers "impl/impl_path_utils.h")
+list(APPEND path_headers "impl/impl_path.h")
 
 list(APPEND path_deps path_pool)
 
