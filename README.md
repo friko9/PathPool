@@ -12,13 +12,6 @@ Each path in any given namespace must have following qualities:
  2. share a common prefix ( also empty prefix )
  3. provide means to explicitly compare any two paths
 
-Minimal requirement for the given path concept requires:
-
-  * sharing namespace on which they navigate
-  * using same prefixes
-  * keeping order of it's elements.
-  * allowing for equality comparison
-
 Each path can be described as:
 
  1. string describing full path
@@ -36,42 +29,31 @@ Path pools describe its paths similar to flyweight design pattern. Despite its m
 A design emerges where each node is defined once, and sub-paths contain only reference to their parent node - this leads to a centralized path pool register with tree-like structures.
 Each path is a list with head pointing at its least significant tag. Head tag may be shared only with its subpaths. Head may be accessed using its id (`pathid_t`). Next node in the list is head's parent node. Last element of a list is root path shared by all paths in the pool. To allow for path operations, and local traversal, helper `get_*` methods are used.
 
-## PathPool classes
+## PathPools
 
 All PathPool classes share a common interface - it is not formalized, as no inheritance is used.
 
-### ``HashPathPool<TagT, AllocatorT, HashF, EqualsF>``
- 
- Uses hash-map to store subnodes. Faster for pools with large number of subnodes with the same parent
-	 
- * `TagT` 
- 
- Stored type. `tag_t = TagT`
- 
- * `AllocatorT = std::allocator`
- 
- STL Allocator
- 
- * `HashF = std::hash<TagT>`
- 
- Hashing function.
- 
- * `EqualsF = std::equal_to<TagT>`
+### Example code
 
- Equality predicate
+#### Basic usage
 
-### ``ListPathPool<TagT, AllocatorT>``
- 
- Uses array linked-lists to store subnodes. Faster in most cases.
-	 
- * `TagT` 
- 
- Stored type. `tag_t = TagT`
+ * Ex1. Below is a basic example of how paths can be represented with single IDs (flyweight objects). For convenience it is better to use Path overlay object described below.
 
- * `AllocatorT = std::allocator`
- 
- STL Allocator
- 
+	`using pathid_t = ListPathPool<std::string>::pathid_t;`  
+	`ListPathPool<std::string> pool { "root" };`  
+	`pathid_t root = pool.get_root();`  
+	`pathid_t p1 = pool.get_subnode(root, "path1");`  
+	`pathid_t p2 = pool.get_subnode(root, "path2");`  
+	`pathid_t p3 = pool.get_subnode(root, "path1");`  
+	`pathid_t p4 = pool.get_subnode(p2, "path1");`  
+	`// Notice no pool object is needed`  
+	`std::cout<< (p1 == p2) << std::endl; // false`  
+	`std::cout<< (p1 == p3) << std::endl; // true`  
+	`std::cout<< (p1 == p4) << std::endl; // false`  
+	`std::cout<< pool.get_tag(root) << std::endl; // root`  
+	`std::cout<< pool.get_tag(p4) << std::endl; // path1`  
+	`std::cout<< pool.get_tag(pool.get_parent(p4)) << std::endl; // path2`  
+	
 ### Defined types:
 
   * `tag_t = TagT`
@@ -132,8 +114,64 @@ All PathPool classes share a common interface - it is not formalized, as no inhe
   * `get_common_path(pathid_t,pathid_t, PathPool) -> std::array<pathid_t,3>`
 
     Returns 3 elements describing connection point of 2 paths `{common_node, left_subnode, right_subnode}`
+	
+### Implementations
+
+#### ``HashPathPool<TagT, AllocatorT, HashF, EqualsF>``
+ 
+ PathPool class using hash-map to store subnodes. Faster for pools with large number of subnodes with the same parent
+	 
+ * `TagT` 
+ 
+ Stored type. `tag_t = TagT`
+ 
+ * `AllocatorT = std::allocator`
+ 
+ STL Allocator
+ 
+ * `HashF = std::hash<TagT>`
+ 
+ Hashing function.
+ 
+ * `EqualsF = std::equal_to<TagT>`
+
+ Equality predicate
+
+#### ``ListPathPool<TagT, AllocatorT>``
+ 
+ PathPool class uses array linked-lists to store subnodes. Faster in most cases.
+	 
+ * `TagT` 
+ 
+ Stored type. `tag_t = TagT`
+
+ * `AllocatorT = std::allocator`
+ 
+ STL Allocator
 
 ## Path class
+
+ Path class is used as object representation of PathPool::pathid_t, which is usually a basic type.
+ Path limits operations to only secure ones. It hides pool object and prevents from mixing ids from different path pools.
+
+### Example code
+
+#### Basic usage
+
+ * Ex1. Using Path objects leads to more readable and more secure code. Below is Path example equivalent to PathPool-Ex1
+
+	`using Path = Path<ListPathPool<std::string>>;`  
+	`Path root;`  
+	`Path p1 { root, "path1" };`  
+	`Path p2 { root, "path2" };`  
+	`Path p3 { root, "path1" };`  
+	`Path p4 { p2, "path1" };`  
+	`std::cout<< (p1 == p2) << std::endl; // false`  
+	`std::cout<< (p1 == p3) << std::endl; // true`  
+	`std::cout<< (p1 == p4) << std::endl; // false`  
+	`std::cout<< root.get_tag() << std::endl; // ''`  
+	`std::cout<< p4.get_tag() << std::endl; // path1`  
+	`std::cout<< p4.get_parent().get_tag() << std::endl; // path2`  
 
 ### ``Path<PoolT,int poolno = 0>``
 
@@ -188,11 +226,19 @@ Example: `Path<HashPathPool<int>,0> root_3;`
  
  Returns tag given on path creation.
  
- * `begin() -> iterator_t`
+ * `begin() -> vertical_iterator`
+
+ Returns iterator pointing at called Path.
+
+ * `cbegin() -> vertical_iterator`
  
  Returns iterator pointing at called Path.
  
- * `end() -> iterator_t`
+ * `end() -> vertical_iterator`
+
+ Returns iterator pointing at root Path.
+
+ * `cend() -> vertical_iterator`
  
  Returns iterator pointing at root Path.
  

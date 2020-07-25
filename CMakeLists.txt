@@ -44,6 +44,9 @@ enable_testing()
 find_package(GTest REQUIRED)
 add_subdirectory(utests)
 
+message("--------------Examples--------------")
+add_subdirectory(examples)
+
 if(perftest)
   message("----------Build performace tests----------")
   set(BENCHMARK_ENABLE_TESTING false)
