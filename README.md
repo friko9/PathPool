@@ -154,9 +154,13 @@ Example: `Path<HashPathPool<int>,0> root_3;`
  
  Defines type used for creating subpaths. tag_t must have default constructor.
  
- * `iterator_t`
+ * `vertical_iterator`
 
  Forward-iterator used for traversing the path up.
+
+ * `horizontal_iterator`
+
+ Forward-iterator used for traversing the paths of the same parent.
 
 ### Methods
 
@@ -172,15 +176,13 @@ Example: `Path<HashPathPool<int>,0> root_3;`
  
  Creates subpath.
  
- * `operator == (Path&) const -> bool`
- 
- * `operator < (Path&) const -> bool`
- 
- * `get_subpaths<ResultT = std::vector>() -> ResultT<Path>`
+ * `get_subpaths() -> std::pair<horizontal_iterator,horizontal_iterator>`
  
  Returns all subpaths referenced from the called path.
  
  * `get_parent() const -> Path`
+ 
+ Returns parent of the called object
  
  * `get_tag() -> tag_t`
  
@@ -196,6 +198,10 @@ Example: `Path<HashPathPool<int>,0> root_3;`
  
 ### Global functions
 
- * `common_path(const Path&, const Path& r) -> Path`
+ * `operator == (const Path&, const Path&) -> bool`
+ 
+ * `operator < (const Path&, const Path&) -> bool`
+
+ * `common_path(const Path&, const Path&) -> Path`
 
  Returns common path of its two arguments.
