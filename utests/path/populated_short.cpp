@@ -198,13 +198,13 @@ namespace {
     ASSERT_TRUE( contains_all(range_t1_t2, {this->r_t1_t2_t1, this->r_t1_t2_t2}));
     ASSERT_TRUE( contains_all(range_t2_t1, {this->r_t2_t1_t1, this->r_t2_t1_t2}));
     ASSERT_TRUE( contains_all(range_t2_t2, {this->r_t2_t2_t1, this->r_t2_t2_t2}));
-    ASSERT_EQ( range_t1_t1_t1.size(), 0);
-    ASSERT_EQ( range_t1_t1_t2.size(), 0);
-    ASSERT_EQ( range_t1_t2_t1.size(), 0);
-    ASSERT_EQ( range_t1_t2_t2.size(), 0);
-    ASSERT_EQ( range_t2_t1_t1.size(), 0);
-    ASSERT_EQ( range_t2_t1_t2.size(), 0);
-    ASSERT_EQ( range_t2_t2_t1.size(), 0);
-    ASSERT_EQ( range_t2_t2_t2.size(), 0);
+    ASSERT_TRUE( empty(range_t1_t1_t1));
+    ASSERT_TRUE( empty(range_t1_t1_t2));
+    ASSERT_TRUE( empty(range_t1_t2_t1));
+    ASSERT_TRUE( empty(range_t1_t2_t2));
+    ASSERT_TRUE( empty(range_t2_t1_t1));
+    ASSERT_TRUE( empty(range_t2_t1_t2));
+    ASSERT_TRUE( empty(range_t2_t2_t1));
+    ASSERT_TRUE( empty(range_t2_t2_t2));
   }
 }

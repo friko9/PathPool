@@ -39,8 +39,8 @@ namespace {
   TYPED_TEST(DefaultEmpty, RootHasNoSiblings)
   {
     TypeParam root;
-    auto subnodes = root.template get_subpaths<std::vector>();
-    ASSERT_EQ(std::distance(subnodes.begin(),subnodes.end()), 0);
+    auto subnodes = root.get_subpaths();
+    ASSERT_EQ(std::distance(subnodes.first,subnodes.second), 0);
   }
   TYPED_TEST(DefaultEmpty, ProperRootBeginIsEnd)
   {
