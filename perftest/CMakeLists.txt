@@ -24,3 +24,4 @@ endfunction()
 
 add_subdirectory(includes)
 add_subdirectory(pathpool)
+add_subdirectory(path)

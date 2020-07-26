@@ -7,10 +7,12 @@ set(name perftest_includes)
 
 list(APPEND depends Boost::filesystem)
 
-list(APPEND files "./BoostPath.h")
+list(APPEND files "BoostPath.h")
 
 message("Target: ${name}")
 add_library( ${name} INTERFACE )
 target_link_libraries( ${name} INTERFACE ${depends})
+target_include_directories( ${name} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_sources( ${name} INTERFACE ${files})
 
 message("Target: ${name} [done] \t <- ${depends}")
