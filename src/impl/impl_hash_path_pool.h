@@ -31,7 +31,7 @@ template<typename TagT, template<typename T> class AllocatorT, typename HashF,ty
 inline
 typename HashPathPool<TagT,AllocatorT,HashF,EqualsF>::pathid_t
 HashPathPool<TagT,AllocatorT,HashF,EqualsF>::
-get_subnode(pathid_t path,tag_t subnode)
+get_subnode(pathid_t path,tag_t const& subnode)
 {
   auto result = m_nodes[path].emplace(subnode,m_nodes.size());
   if(result.second)
@@ -74,7 +74,7 @@ get_parent(pathid_t path) const
 
 template<typename TagT, template<typename T> class AllocatorT, typename HashF,typename EqualsF>
 inline
-typename HashPathPool<TagT,AllocatorT,HashF,EqualsF>::tag_t
+typename HashPathPool<TagT,AllocatorT,HashF,EqualsF>::tag_t const&
 HashPathPool<TagT,AllocatorT,HashF,EqualsF>::
 get_tag(pathid_t path) const
 {

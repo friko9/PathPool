@@ -28,7 +28,7 @@ template<typename TagT, template<typename T> class AllocatorT>
 inline
 typename ListPathPool<TagT,AllocatorT>::pathid_t
 ListPathPool<TagT,AllocatorT>::
-get_subnode(pathid_t path,tag_t subnode)
+get_subnode(pathid_t path,tag_t const& subnode)
 {
   pathid_t node = path;
   for(node = m_nodes[node].m_child; node != null; node = m_nodes[node].m_sibling)
@@ -70,7 +70,7 @@ get_parent(pathid_t path) const
 
 template<typename TagT, template<typename T> class AllocatorT> 
 inline
-typename ListPathPool<TagT,AllocatorT>::tag_t
+typename ListPathPool<TagT,AllocatorT>::tag_t const&
 ListPathPool<TagT,AllocatorT>::
 get_tag(pathid_t path) const
 {
@@ -90,7 +90,7 @@ template<typename TagT, template<typename T> class AllocatorT>
 inline
 typename ListPathPool<TagT,AllocatorT>::pathid_t
 ListPathPool<TagT,AllocatorT>::
-insert_subnode(pathid_t path, tag_t subnode)
+insert_subnode(pathid_t path, tag_t const& subnode)
 {
   pathid_t i = m_nodes.size();
   m_nodes.push_back(node_t{subnode,path,m_nodes[path].m_child,null});

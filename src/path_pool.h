@@ -38,11 +38,11 @@ public:
   HashPathPool(tag_t root);
   auto get_parent(pathid_t path) const -> pathid_t;
   auto get_root() const noexcept -> pathid_t ;
-  auto get_subnode(pathid_t path,tag_t subnode) -> pathid_t;
+  auto get_subnode(pathid_t path,tag_t const& subnode) -> pathid_t;
   auto get_subnodes(pathid_t path) const -> std::pair<iterator_t,iterator_t>;
   template<typename ResultT>
   auto get_subnodes(pathid_t path, ResultT) const -> ResultT;
-  auto get_tag(pathid_t path) const -> tag_t ;
+  auto get_tag(pathid_t path) const -> tag_t const& ;
 private:
   static constexpr pathid_t null {0};
   static constexpr pathid_t rootid {0};
@@ -72,13 +72,13 @@ public:
   ListPathPool(tag_t root);
   auto get_parent(pathid_t path) const -> pathid_t;
   auto get_root() const noexcept -> pathid_t;
-  auto get_subnode(pathid_t path,tag_t subnode) -> pathid_t;
+  auto get_subnode(pathid_t path,tag_t const& subnode) -> pathid_t;
   auto get_subnodes(pathid_t path) const -> std::pair<iterator_t,iterator_t>;
   template<typename ResultT>
   auto get_subnodes(pathid_t path, ResultT) const -> ResultT;
-  auto get_tag(pathid_t path) const -> tag_t;
+  auto get_tag(pathid_t path) const -> tag_t const&;
 private:
-  auto insert_subnode(pathid_t path, tag_t subnode) -> pathid_t;
+  auto insert_subnode(pathid_t path, tag_t const& subnode) -> pathid_t;
   auto get_next_sibling(pathid_t path) const -> pathid_t;
 private:
   static constexpr pathid_t null {0};
