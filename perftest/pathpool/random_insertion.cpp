@@ -43,7 +43,6 @@ void RandomInsertion(benchmark::State& state)
   using ContainerT = typename std::tuple_element<0,Args>::type;
   using GeneratorT = typename std::tuple_element<1,Args>::type;
   using T = decltype(GeneratorT{}.operator()());
-  using path_t = typename ContainerT::pathid_t;
   //populate
   GeneratorT gen;
   size_t size = state.range(0);
@@ -52,8 +51,6 @@ void RandomInsertion(benchmark::State& state)
   for(size_t i=0; i<size; ++i)
     insertions.emplace_back(rand()%(insertions.size()+1), gen());
   //test
-  std::vector<path_t> nodes{{},size};
-  nodes.reserve(state.range(0));
   size_t i=0;
   for(auto _ : state)
     {
@@ -64,7 +61,12 @@ void RandomInsertion(benchmark::State& state)
   state.SetItemsProcessed( i*size );
 }
 
-BENCHMARK_TEMPLATE(RandomInsertion, std::tuple<HashPathPool<int>,RandomUIntGen> )->RangeMultiplier(1<<4)->Range(64, 64<<16);
-BENCHMARK_TEMPLATE(RandomInsertion, std::tuple<HashPathPool<std::string>,RandomStringGen> )->RangeMultiplier(1<<4)->Range(64, 64<<16);
-BENCHMARK_TEMPLATE(RandomInsertion, std::tuple<ListPathPool<int>,RandomUIntGen> )->RangeMultiplier(1<<4)->Range(64, 64<<16);
-BENCHMARK_TEMPLATE(RandomInsertion, std::tuple<ListPathPool<std::string>,RandomStringGen> )->RangeMultiplier(1<<4)->Range(64, 64<<16);
+using HashPathPool_int = std::tuple<HashPathPool<int>,RandomUIntGen>;
+using HashPathPool_string = std::tuple<HashPathPool<std::string>,RandomStringGen>;
+using ListPathPool_int = std::tuple<ListPathPool<int>,RandomUIntGen>;
+using ListPathPool_string = std::tuple<ListPathPool<std::string>,RandomStringGen>;
+
+BENCHMARK_TEMPLATE(RandomInsertion, HashPathPool_int )->RangeMultiplier(1<<4)->Range(64, 64<<16);
+BENCHMARK_TEMPLATE(RandomInsertion, HashPathPool_string )->RangeMultiplier(1<<4)->Range(64, 64<<16);
+BENCHMARK_TEMPLATE(RandomInsertion, ListPathPool_int )->RangeMultiplier(1<<4)->Range(64, 64<<16);
+BENCHMARK_TEMPLATE(RandomInsertion, ListPathPool_string )->RangeMultiplier(1<<4)->Range(64, 64<<16);

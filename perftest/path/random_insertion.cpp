@@ -61,6 +61,10 @@ void RandomInsertion(benchmark::State& state)
   state.SetItemsProcessed( i*size );
 }
 
-BENCHMARK_TEMPLATE(RandomInsertion, std::tuple<Path<HashPathPool<std::string>>,RandomStringGen> )->RangeMultiplier(1<<4)->Range(64, 64<<16);
-BENCHMARK_TEMPLATE(RandomInsertion, std::tuple<Path<ListPathPool<std::string>>,RandomStringGen> )->RangeMultiplier(1<<4)->Range(64, 64<<16);
-BENCHMARK_TEMPLATE(RandomInsertion, std::tuple<BoostPath,RandomStringGen> )->RangeMultiplier(1<<4)->Range(64, 64<<16);
+using HashPath_string = std::tuple<Path<HashPathPool<std::string>>,RandomStringGen>;
+using ListPath_string = std::tuple<Path<ListPathPool<std::string>>,RandomStringGen>;
+using BoostPath_string = std::tuple<BoostPath,RandomStringGen>;
+
+BENCHMARK_TEMPLATE(RandomInsertion, HashPath_string )->RangeMultiplier(1<<4)->Range(64, 64<<16);
+BENCHMARK_TEMPLATE(RandomInsertion, ListPath_string )->RangeMultiplier(1<<4)->Range(64, 64<<16);
+BENCHMARK_TEMPLATE(RandomInsertion, BoostPath_string )->RangeMultiplier(1<<4)->Range(64, 64<<16);
