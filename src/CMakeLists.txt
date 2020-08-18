@@ -1,42 +1,60 @@
-list(APPEND features cxx_std_14 )
-list(APPEND compile_opt "-Winline")
-
 ############
 # PathPool #
 ############
-list(APPEND pp_headers "impl/custom_iterators.h")
-list(APPEND pp_headers "path_pool.h")
-list(APPEND pp_headers "impl/impl_list_path_pool.h")
-list(APPEND pp_headers "impl/impl_hash_path_pool.h")
-list(APPEND pp_headers "impl/impl_path_pool_utils.h")
+set( name pool )
+message( "Target: pathpool::${name}")
+add_library( ${name} INTERFACE )
 
-message("Target: path_pool")
-add_library( path_pool INTERFACE )
-target_sources( path_pool INTERFACE ${pp_headers} )
-target_compile_options(path_pool INTERFACE ${compile_opt} )
-target_compile_features(path_pool INTERFACE ${features} )
-target_include_directories(path_pool INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_sources( ${name}
+  INTERFACE
+  "impl/custom_iterators.h"
+  "path_pool.h"
+  "impl/impl_list_path_pool.h"
+  "impl/impl_hash_path_pool.h"
+  "impl/impl_path_pool_utils.h" 
+  )
 
-target_link_libraries(path_pool INTERFACE ${pp_deps})
+target_compile_features( ${name}
+  INTERFACE
+  cxx_std_14
+  )
 
-message("Target: path_pool [done]")
+target_include_directories( ${name}
+  INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+
+add_library( pathpool::pool ALIAS ${name} )
+message( "Target: pathpool::${name} [done]")
 
 ########
 # Path #
 ########
-list(APPEND path_headers "path.h")
-list(APPEND path_headers "impl/impl_path_utils.h")
-list(APPEND path_headers "impl/impl_path.h")
+set( name path )
+message( "Target: pathpool::${name}")
+add_library( ${name} INTERFACE )
 
-list(APPEND path_deps path_pool)
+target_sources( ${name}
+  INTERFACE
+  "path.h"
+  "impl/impl_path_utils.h"
+  "impl/impl_path.h"
+  )
 
-message("Target: path")
-add_library( path INTERFACE )
-target_sources( path INTERFACE ${path_headers} )
-target_compile_options(path INTERFACE ${compile_opt} )
-target_compile_features(path INTERFACE ${features} )
-target_include_directories(path INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_features( ${name}
+  INTERFACE
+  cxx_std_14
+  )
 
-target_link_libraries(path INTERFACE ${path_deps})
+target_include_directories( ${name}
+  INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 
-message("Target: path [done] \t <- ${path_deps}")
+target_link_libraries( ${name}
+  INTERFACE
+  pathpool::pool
+  )
+
+add_library( pathpool::path ALIAS ${name} )
+message( "Target: pathpool::${name} [done]")

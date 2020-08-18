@@ -2,7 +2,7 @@
 # Add Google Test #
 ###################
 function(add_google_test)
-  cmake_parse_arguments(add_google_test "" "FNAME;LABEL;TIMEOUT" "DEPENDS;FILES" ${ARGN})
+  cmake_parse_arguments(add_google_test "" "FNAME;LABEL;TIMEOUT" "DEPENDS;FILES;FEATURES,FLAGS;PROPERTIES;DEFINITIONS" ${ARGN})
   set(fname ${add_google_test_FNAME})
   set(label ${add_google_test_LABEL})
   set(timeout ${add_google_test_TIMEOUT})
@@ -11,25 +11,26 @@ function(add_google_test)
   endif()
   set(files ${add_google_test_FILES})
   set(depends ${add_google_test_DEPENDS})
-  set(name utest_${label}_${fname}-${PROJECT_VERSION})
+  set(features ${add_google_test_FEATURES})
+  set(flags ${add_google_test_FLAGS})
+  set(properties ${add_google_test_PROPERTIES})
+  set(definitions ${add_google_test_DEFINITIONS})
 
-  list(APPEND features cxx_std_14 )
-  list(APPEND compile_opt "-Wall")
-
+  set(name utest-${label}-${fname})
   message("Target: ${name}")
   add_executable( ${name} )
   target_sources( ${name} PRIVATE ${files}  )
   target_compile_features( ${name} PRIVATE ${features} )
   target_compile_options( ${name} PRIVATE ${compile_opt} )
-  target_compile_definitions( ${name} PRIVATE -DUTEST_FNAME=${fname} )
+  set_target_properties( ${name} PROPERTIES ${properties} )
+  target_compile_definitions( ${name} PRIVATE ${definitions} )
   target_include_directories( ${name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
   target_link_libraries( ${name} PRIVATE ${depends} GTest::GTest GTest::Main)
   gtest_discover_tests( ${name}
     TEST_PREFIX "${name}_"
     PROPERTIES LABELS "${label}"
     DISCOVERY_TIMEOUT ${timeout} )
-  message("Target: ${name} [done] \t <- ${depends}")
-  list(APPEND utests ${name})
+  message("Target: ${name} [done]")
 endfunction()
 
 add_subdirectory(includes)

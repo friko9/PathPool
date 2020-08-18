@@ -3,16 +3,25 @@
 #####################
 find_package(Boost REQUIRED filesystem)
 
-set(name perftest_includes)
-
-list(APPEND depends Boost::filesystem)
-
-list(APPEND files "BoostPath.h")
+set(name perftest-includes)
 
 message("Target: ${name}")
 add_library( ${name} INTERFACE )
-target_link_libraries( ${name} INTERFACE ${depends})
-target_include_directories( ${name} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_sources( ${name} INTERFACE ${files})
 
-message("Target: ${name} [done] \t <- ${depends}")
+target_link_libraries( ${name}
+  INTERFACE
+  Boost::filesystem
+  )
+
+target_include_directories( ${name}
+  INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+
+target_sources( ${name}
+  INTERFACE
+  "BoostPath.h"
+  )
+
+message("Target: ${name} [done]")
+add_library( pathpool::perftest::includes ALIAS ${name} )

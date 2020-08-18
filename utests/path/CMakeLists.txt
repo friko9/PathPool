@@ -2,19 +2,24 @@
 # Google Tests #
 # path	       #
 ################
-list(APPEND depends path)
-list(APPEND depends path_pool)
-list(APPEND depends utest_includes)
+add_google_test(
+  FNAME "path"
+  LABEL "interface-short"
+  DEPENDS
+  pathpool::path
+  pathpool::utest::includes
 
-list(APPEND files_short "empty_short.cpp")
-list(APPEND files_short "iterator_short.cpp")
-list(APPEND files_short "populated_short.cpp")
-list(APPEND files_short "common_path_short.cpp")
-list(APPEND files_short ${files})
+  FILES
+  "empty_short.cpp"
+  "iterator_short.cpp"
+  "populated_short.cpp"
+  "common_path_short.cpp"
 
-# list(APPEND files_long "vergecase_long.cpp")
-# list(APPEND files_long "crosscomp_long.cpp")
-# list(APPEND files_long ${files})
+  PROPERTIES
+  CXX_STANDARD 14
+  CXX_STANDARD_REQUIRED YES
+  CXX_EXTENSIONS NO
 
-add_google_test(FNAME "path" LABEL "interface_short" DEPENDS ${depends} FILES ${files_short} )
-# add_google_test(FNAME "path" LABEL "interface_long" DEPENDS ${depends} FILES ${files_long} )
+  FLAGS
+  "-Wall"
+  )

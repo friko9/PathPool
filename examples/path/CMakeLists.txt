@@ -1,4 +1,12 @@
-message(STATUS "Target: path_ex1")
-add_executable(path_ex1 ex1.cpp)
-target_link_libraries(path_ex1 path)
-message(STATUS "Target: path_ex1 [done]")
+set(name path-ex1)
+message("Target: ${name}")
+
+add_executable( ${name}
+  ex1.cpp)
+
+target_link_libraries( ${name}
+  PRIVATE
+  pathpool::path)
+
+message("Target: ${name} [done]")
+add_executable( pathpool::examples::${name} ALIAS ${name})

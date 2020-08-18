@@ -2,9 +2,29 @@
 # Google Benchmark  #
 # path     	    #
 #####################
+add_perf_test(FNAME "path-insertion"
+  DEPENDS
+  pathpool::path
+  pathpool::perftest::includes
+  
+  FILES "insertion.cpp"
 
-list(APPEND depends path)
-list(APPEND depends perftest_includes)
+  PROPERTIES
+  CXX_STANDARD 14
+  CXX_STANDARD_REQUIRED YES
+  CXX_EXTENSIONS NO
+  )
 
-add_perf_test(FNAME "path_insertion" DEPENDS ${depends} FILES "insertion.cpp")
-add_perf_test(FNAME "path_comparison" DEPENDS ${depends} FILES "comparison.cpp")
+add_perf_test(FNAME "path-comparison"
+  DEPENDS
+  pathpool::path
+  pathpool::perftest::includes
+  
+  FILES
+  "comparison.cpp"
+
+  PROPERTIES
+  CXX_STANDARD 14
+  CXX_STANDARD_REQUIRED YES
+  CXX_EXTENSIONS NO
+  )
