@@ -95,9 +95,9 @@ get_root() const noexcept
 //////////////////////////
 template<typename TagT, template<typename T> class AllocatorT, typename HashF,typename EqualsF> 
 struct HashPathPool<TagT,AllocatorT,HashF,EqualsF>::node_t :
-  public std::unordered_map<tag_t, pathid_t, HashF, EqualsF, AllocatorT<std::pair<tag_t,pathid_t>>>
+  public std::unordered_map<tag_t, pathid_t, HashF, EqualsF>
   {
-    using MapT = std::unordered_map<tag_t, pathid_t, HashF, EqualsF, AllocatorT<std::pair<tag_t,pathid_t>>>;
+    using MapT = std::unordered_map<tag_t, pathid_t, HashF, EqualsF>;
     node_t(tag_t name, pathid_t parent,const MapT& children):
       MapT{children},
       m_parent{parent},
@@ -114,7 +114,7 @@ struct HashPathPool<TagT,AllocatorT,HashF,EqualsF>::node_t :
 template<typename TagT, template<typename T> class AllocatorT, typename HashF,typename EqualsF> 
 class HashPathPool<TagT,AllocatorT,HashF,EqualsF>::iterator_t
   {
-    using it_t = typename node_t::MapT::const_iterator;
+    using it_t = typename node_t::const_iterator;
   public:
     using iterator_category = std::forward_iterator_tag;
     using value_type = pathid_t;

@@ -14,9 +14,6 @@ namespace {
   {
   public:
     using TestObjT = T;
-    void SetUp() override
-    {}
-  public:
   };
   
   TYPED_TEST_CASE(DefaultEmpty, types);
