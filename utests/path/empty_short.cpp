@@ -44,4 +44,10 @@ namespace {
     TypeParam root;
     ASSERT_EQ(root.begin(), root.end());
   }
+
+  TYPED_TEST(DefaultEmpty, HashReturnsWorks)
+  {
+    TypeParam root;
+    ASSERT_EQ(root.get_hash(),root.get_hash());
+  }
 }

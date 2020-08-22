@@ -4,6 +4,28 @@
 // wardens prevent cyclic inclusion
 #include "../path.h"
 
+//////////////////////
+// Global Functions //
+//////////////////////
+namespace {
+  template<typename PoolT>
+  typename std::enable_if<std::is_convertible<typename PoolT::pathid_t, size_t>::value,
+			  size_t>::type
+  convert_to_size_t(typename PoolT::pathid_t arg)
+  {
+    return static_cast<size_t>(arg);
+  }
+
+  template<typename PoolT>
+  typename std::enable_if<!std::is_convertible<typename PoolT::pathid_t, size_t>::value,
+			  size_t>::type
+  convert_to_size_t(typename PoolT::pathid_t arg)
+  {
+    static_assert(std::is_convertible<typename PoolT::pathid_t, size_t>::value,
+		  "PoolT::pathid_t cannot be converted to size_t");
+    return 0;
+  }
+}
 ////////////////
 // Path class //
 ////////////////
@@ -42,6 +64,15 @@ operator /(const tag_t& t) const
 
 template<typename PoolT,int poolno>
 inline
+size_t
+Path<PoolT,poolno>::
+get_hash() const
+{
+  return convert_to_size_t<PoolT>(m_path);
+}
+
+template<typename PoolT,int poolno>
+inline
 std::pair<typename Path<PoolT,poolno>::horizontal_iterator,
 	  typename Path<PoolT,poolno>::horizontal_iterator>
 Path<PoolT,poolno>::
@@ -70,7 +101,7 @@ Path<PoolT,poolno>::get_tag() const
 template<typename PoolT,int poolno>
 inline
 typename Path<PoolT,poolno>::vertical_iterator
-Path<PoolT,poolno>::begin()
+Path<PoolT,poolno>::begin() const
 {
   return vertical_iterator {*this};
 }
@@ -86,7 +117,7 @@ Path<PoolT,poolno>::cbegin() const
 template<typename PoolT,int poolno>
 inline
 typename Path<PoolT,poolno>::vertical_iterator
-Path<PoolT,poolno>::end()
+Path<PoolT,poolno>::end() const
 {
   return vertical_iterator {};
 }

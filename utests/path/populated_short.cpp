@@ -173,7 +173,7 @@ namespace {
     ASSERT_TRUE( equals(range_t2_t2_t2, {this->r_t2_t2_t2, this->r_t2_t2, this->r_t2}));
   }
 
-    TYPED_TEST(Populated, GetSubpaths)
+  TYPED_TEST(Populated, GetSubpaths)
   {
     auto range_root = this->root.get_subpaths();
     auto range_t1 = this->r_t1.get_subpaths();
@@ -206,5 +206,26 @@ namespace {
     ASSERT_TRUE( empty(range_t2_t1_t2));
     ASSERT_TRUE( empty(range_t2_t2_t1));
     ASSERT_TRUE( empty(range_t2_t2_t2));
+  }
+
+  TYPED_TEST(Populated, HashIsUnique)
+  {
+    auto op = [](int x){ return std::to_string(x);};
+    for( auto const& x : this->paths)
+      for( auto const& y : this->paths)
+	if( x != y )
+	  {
+	    ASSERT_NE(x.get_hash(),y.get_hash())
+	      <<full_path_str(x,op)<<','
+	      <<full_path_str(y,op);
+	  }
+  }
+
+  TYPED_TEST(Populated, HashIsRepetitive)
+  {
+    auto op = [](int x){ return std::to_string(x);};
+    for( auto const& x : this->paths)
+      ASSERT_EQ(x.get_hash(),x.get_hash())
+	<<full_path_str(x,op);
   }
 }
